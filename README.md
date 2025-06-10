@@ -55,7 +55,13 @@ message ComandoResponse {
  * **-3**: Erro na criação do arquivo
  * **4**:  Remover Arquivo com sucesso
  * **-4**: Erro ao tentar Remover Arquivo
- * **5**:  
+ * **5**:  Mudança de permissões realizada com sucesso
+ * **-5**: Erro ao tentar mudar permissões
+ * **6**:  listar diretório remotos
+ * **-6**  Erro ao listar os diretórios
+ * **7**:  listar logs  do sistema
+ * **-7**: Erro ao listar log
+
 ## ⚙️ Configuração do Ambiente
 
 ### 1. Subindo Redis e MongoDB com Docker
