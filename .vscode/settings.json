@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.MD": "bibtex",
+        "*.inc": "cpp"
+    }
+}
