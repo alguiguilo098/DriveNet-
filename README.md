@@ -1,4 +1,4 @@
-# DriveNet
+# DriveNet-
  Aplicação de terminal que permite ao usuário interagir com o Google Drive diretamente pela linha de comando, realizando ações como upload, download, listagem de arquivos, criação de pastas, entre outras funcionalidades. 
 ## Arquitetura
 ![image](https://github.com/user-attachments/assets/5aa41504-a526-4185-8f86-0f9a8c4a3451)
@@ -36,9 +36,26 @@ message ComandoResponse {
 * **Cliente(C++)**: O cliente pode somente acessar do servidor,  O CommandoResponse, com a mensagem de erro, saída do codigo, e o codigo de erro.
 * **Servidor(Python)**: O servidor em python pode somente acessar do cliente, ComandoResquest, contendo o a operação e os argumentos da mesma.
 
-### Codigos de Erros 
-
-
+### Operações 
+   * **?**: Mostras as operações que DriveNet- pode Realizar
+   * **mkdirnet**: Criar um diretório do google Drive
+   * **cdnet**: Mudar o diretório atual
+   * **touchnet**: Cria um arquivo no google Drive 
+   * **rmnet**: remover um arquivo do google Drive
+   * **chmodnet**: Mudar as permissões do arquivo do google Drive 
+   * **lsnet**: listar o diretório atual do google Drive
+   * **lastlognet**: mostrar o logs do sistemas
+ 
+### Codigo de Erro
+ * **1**:  Arquivo Criado com sucesso
+ * **-1**: Erro na criação do Arquivo
+ * **2**:  Mudança de diretório feita com sucesso
+ * **-2**: Erro na mudança de diretório
+ * **3**:  Arquivo Criado com sucesso
+ * **-3**: Erro na criação do arquivo
+ * **4**:  Remover Arquivo com sucesso
+ * **-4**: Erro ao tentar Remover Arquivo
+ * **5**:  
 ## ⚙️ Configuração do Ambiente
 
 ### 1. Subindo Redis e MongoDB com Docker
