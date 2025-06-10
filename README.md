@@ -5,7 +5,40 @@
 * **Grpc**:Comunição entre o programa de terminal e o servidor python.
 * **redis**: Serviço de cache para manter os arquivos mais recentes
 * **pymongo**: Operações de logs de deletar e acesso ao arquivos.
-* **pyDrive**: API de google drive para manipular arquivos. 
+* **pyDrive**: API de google drive para manipular arquivos.
+
+## Interface de Serviço
+```bash
+syntax = "proto3";
+
+package terminal;
+
+// Serviço de terminal com envio e resposta de comandos
+service TerminalService {
+  // Envia um comando com argumentos e recebe a saída
+  rpc ExecutarComando (ComandoRequest) returns (ComandoResponse);
+}
+
+// Mensagem para enviar um comando com argumentos
+message ComandoRequest {
+  string comando = 1;            // Ex: "ls"
+  repeated string argumentos = 2; // Ex: ["-la", "/home/user"]
+}
+
+// Mensagem com a resposta do comando
+message ComandoResponse {
+  string saida = 1;              // Saída padrão (stdout)
+  string erro = 2;               // Saída de erro (stderr)
+  int32 codigo_saida = 3;       // Código de saída do processo
+}
+
+```
+* **Cliente(C++)**: O cliente pode somente acessar do servidor,  O CommandoResponse, com a mensagem de erro, saída do codigo, e o codigo de erro.
+* **Servidor(Python)**: O servidor em python pode somente acessar do cliente, ComandoResquest, contendo o a operação e os argumentos da mesma.
+
+### Codigos de Erros 
+
+
 ## ⚙️ Configuração do Ambiente
 
 ### 1. Subindo Redis e MongoDB com Docker
