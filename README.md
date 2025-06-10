@@ -1,6 +1,8 @@
 # DriveNet
  Aplicação de terminal que permite ao usuário interagir com o Google Drive diretamente pela linha de comando, realizando ações como upload, download, listagem de arquivos, criação de pastas, entre outras funcionalidades. 
- 
+## Arquitetura
+![image](https://github.com/user-attachments/assets/5aa41504-a526-4185-8f86-0f9a8c4a3451)
+
 ## ⚙️ Configuração do Ambiente
 
 ### 1. Subindo Redis e MongoDB com Docker
