@@ -102,3 +102,6 @@ Instale as dependências necessárias para o servidor Python:
 ```bash
 pip install -r requirements.txt
 ```
+
+## Configuração credencias google Drive 
+
