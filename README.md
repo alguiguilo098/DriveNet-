@@ -92,6 +92,13 @@ make
 
 ### 4. Gerar Arquivos grpc em python 
 ```bash
-cd code_cpp/
-make 
+cd code_python/
+python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. command.proto
+```
+
+### 5. Instalação das Dependências do Python
+Instale as dependências necessárias para o servidor Python:
+
+```bash
+pip install -r requirements.txt
 ```
