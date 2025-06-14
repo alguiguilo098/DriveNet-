@@ -1,6 +1,6 @@
 services:
   redis:
-    image: redis:7.2
+    image: redis
     container_name: redis-server
     ports:
       - "6380:6379"
@@ -9,13 +9,13 @@ services:
     restart: always
 
   mongodb:
-    image: mongo:6.0
-    container_name: mongo-db
+    image: mongo:6
+    container_name: mongodb
     ports:
       - "27017:27017"
     volumes:
-      - mongo-data:/data/db
-    restart: always
+      - ./mongo-data:/data/db
+    restart: unless-stopped
 
 volumes:
   redis-data:
