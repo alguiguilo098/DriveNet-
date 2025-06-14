@@ -40,7 +40,7 @@ message ComandoResponse {
    * **?**: Mostras as operações que DriveNet- pode Realizar
    * **mkdirnet**: Criar um diretório do google Drive
    * **cdnet**: Mudar o diretório atual
-   * **touchnet**: Cria um arquivo no google Drive 
+   * **vimnet**: Cria um arquivo no google Drive 
    * **rmnet**: remover um arquivo do google Drive
    * **chmodnet**: Mudar as permissões do arquivo do google Drive 
    * **lsnet**: listar o diretório atual do google Drive
