@@ -2,32 +2,14 @@ from utils.DrivenetAPI import DrivenetAPI
 from utils.MongDBAPI import MongoDBAPI
 from utils.ReddisAPI import RedisAPI
 
-driveapi=DrivenetAPI(path="google_credencias.json",root_id="1O6auuYW7oJRzE9x0wISjAKBmwsqzoYUO")
+driveapi=DrivenetAPI(path="google_credencias.json",root_id="1S-PQtGE6q6J5jiPC9RLPJaIfj3hE57kn")
 mongoapi=MongoDBAPI(url="mongodb://localhost:27017/")
 redisapi=RedisAPI(host="localhost",port=6379,db=0,password=None)
 
 def main():
-    log=mongoapi.insert_log({
-        "timestamp": "2023-10-01T12:00:00Z",
-        "mensagem": "Servidor iniciado com sucesso",
-        "status": "sucesso"
-    })
-
-    log=mongoapi.insert_log({
-        "timestamp": "2023-10-01T12:00:00Z",
-        "mensagem": "Servidor iniciado com sucesso 1",
-        "status": "sucesso"
-    })
-
-    log=mongoapi.insert_log({
-        "timestamp": "2023-10-01T12:00:00Z",
-        "mensagem": "Servidor iniciado com sucesso 3",
-        "status": "sucesso"
-    })
-    
-    getlogs=mongoapi.getlogs(limit=3)
-
-    print("Logs:", getlogs)
+    print(driveapi.ls_drivenet())
+    driveapi.file_download(file_id="1Bmr5Lpk-xMh3QEtql1U1LtweXEcCjalz",file_path="teste.pdf")
+    driveapi.file_upload(file_path="./teste.pdf",file_name="teste200.pdf")
 
 
 if __name__=="__main__":
