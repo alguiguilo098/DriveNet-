@@ -1,11 +1,10 @@
 import pymongo
 
 class MongoDBAPI:
-    def __init__(self,url="mongodb://localhost:27017/"):
+    def __init__(self,url="mongodb://127.0.0.1:27017,127.0.0.1:27018/?replicaSet=rs0"):
         self.__client=pymongo.MongoClient(url)
         self.__dblogs=self.__client["logger"]
         self.__dirs_acess=self.__client["dirs_acess"]
-    
     def insert_log(self,log:dict)->bool:
         """Inserir um log no banco de dados MongoDB
         

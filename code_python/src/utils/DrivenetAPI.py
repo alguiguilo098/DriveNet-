@@ -2,40 +2,47 @@ import io
 from googleapiclient.http import MediaIoBaseDownload, MediaIoBaseUpload
 from googleapiclient.discovery import build
 from google.oauth2 import service_account 
+from MongDBAPI import MongoDBAPI
+from datetime import datetime
+
 class DrivenetAPI:
-    def __init__(self,path:str,root_id:str)->None:
+    def __init__(self,path:str,root_id:str, mongoapi:MongoDBAPI)->None:
         """
         Inicializa a API do Google Drive coma
         """
         creds = service_account.Credentials.from_service_account_file(path,scopes=['https://www.googleapis.com/auth/drive'])
         self.__drive_service = build('drive', 'v3', credentials=creds)
         self.__root_id=root_id
+        self.__mongoapi=mongoapi
+        
     def ls_drivenet(self):
         """Listar arquivos em um diretório do Google Drive
         
         Args: 
             file_id (str): ID do arquivo ou pasta no Google Drive"""
-        
-        results= self.__drive_service.files().list(
-            q=f"'{self.__root_id}' in parents and trashed=false",
-            fields="nextPageToken, files(id, name, mimeType, size, modifiedTime)"
-        )
-        
-        return results.execute().get("files",[])
-    
-    def touch_drivenet(self,name:str)->str:
-        """Criar um arquivo no Google Drive
-        
-        Args:
-            name (str): Nome do arquivo a ser criado
-            file_id (str): ID do arquivo ou pasta pai no Google Drive"""
-        file_metadata={
-            'name':name,
-            'mimeType':'application/vnd.google-apps.document',
-            'parents':[self.__root_id]
-        }
-        file=self.__drive_service.files().create(body=file_metadata,fields='id')
-        return file.execute().get('id')
+        datetime_now= datetime.now()
+        try:
+            results= self.__drive_service.files().list(
+                q=f"'{self.__root_id}' in parents and trashed=false",
+                fields="nextPageToken, files(id, name, mimeType, size, modifiedTime)"
+            )
+            response=results.execute().get("files",[])
+            self.__createlogs(datetime_now=datetime_now,mensagem=f"Listar")
+            return response
+        except Exception as e:
+            response=[]
+            self.__createlogs(datetime_now=datetime_now,
+            mensagem=f"Error ao listar arquivos no diretório {self.__get_name_root()}:{str(e)}",
+            status="error")
+
+            return response
+
+    def __createlogs(self, datetime_now,mensagem,status="sucess"):
+            self.__mongoapi.insert_log({
+                "timestamp": datetime_now.strftime("%d/%m/%Y, %H:%M:%S"),
+                "mensagem": mensagem,
+                "status": status
+            })
     
     def mkdir_drivenet(self,name):
         """Criar um diretório no Google Drive
@@ -43,13 +50,25 @@ class DrivenetAPI:
         Args:
             name (str): Nome do diretório a ser criado
             file_id (str): ID do arquivo ou pasta pai no Google Drive"""
-        file_metada={
+        datetime_now=datetime.now()
+        try:
+            file_metada={
             'name':name,
             'mimeType':'application/vnd.google-apps.folder',
             'parents':[self.__root_id]
-        }
-        file=self.__drive_service.files().create(body=file_metada,fields='id')
-        return file.execute().get('id')
+            }
+            file=self.__drive_service.files().create(body=file_metada,fields='id')
+            response=file.execute().get('id')
+            self.__createlogs(datetime_now=datetime_now,
+            mensagem=f"Diretório {name} criado com sucesso",
+            status="sucess")
+            return response
+        except  Exception as e:
+            self.__createlogs(datetime_now=datetime_now,
+            mensagem=f"Error ao criar diretório {name}",
+            status="error")
+            return []
+
     
     def rm_drivenet(self,file_id:str)->bool:
         """Remover um arquivo ou diretório do Google Drive
@@ -57,10 +76,18 @@ class DrivenetAPI:
         Args:
             file_id (str): ID do arquivo ou pasta a ser removido"""
         
+        datetime_now=datetime.now()
         try:
             self.__drive_service.files().delete(fileId=file_id).execute()
+            self.__createlogs(datetime_now=datetime_now,
+            mensagem=f"Arquivo {file_id} deletado com sucesso"
+            )
             return True
         except Exception as e:
+            self.__createlogs(datetime_now=datetime_now,
+            mensagem=f"Error ao deletar Arquivo com id  {file_id}:{str(e)}",
+            status="error"
+            )
             return False, str(e)
     
     def cd_drivenet(self,file_id:str)->None:
@@ -114,19 +141,34 @@ class DrivenetAPI:
             fields="id"
         )
         try:
+            datetime_now=datetime.now()
             response = request.execute()
+            self.__createlogs(datetime_now=datetime_now,
+            mensagem=f"Upload do arquivo {file_name} feito com sucesso",
+            status="sucess")
             return True, response.get("id")
         except Exception as e:
-            return False,str(e)
+            self.__createlogs(datetime_now=datetime_now,
+            mensagem=f"Erro ao Realizar Upload do Arquivo {file_name}:{str(e)}",
+            status="error")
+            return False, str(e)
 
     def file_download(self,file_path:str,file_id)->bool:
-        request = self.__drive_service.files().get_media(fileId=file_id)
-        fh = io.FileIO(file_path, mode='wb')
+        datetime_now=datetime.now()
+        try:
+            request = self.__drive_service.files().get_media(fileId=file_id)
+            fh = io.FileIO(file_path, mode='wb')
     
-        downloader = MediaIoBaseDownload(fh, request)
+            downloader = MediaIoBaseDownload(fh, request)
     
-        done = False
-        while not done:
-            status, done = downloader.next_chunk()
-            print(f"Download {int(status.progress() * 100)}%.")
-    
+            done = False
+            while not done:
+                _, done = downloader.next_chunk()
+            
+            self.__createlogs(datetime_now=datetime_now,
+            mensagem=f"Dowload do arquivo {file_path} realizado com sucesso")
+            return True
+        except Exception as e:
+            self.__createlogs(datetime_now=datetime_now,
+            mensagem=f"Erro ao  realizar Dowload do arquivo {file_path}")
+            return True
