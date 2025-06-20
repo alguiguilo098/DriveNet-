@@ -1,7 +1,8 @@
 import pymongo
 
 class MongoDBAPI:
-    def __init__(self,url="mongodb://127.0.0.1:27017,127.0.0.1:27018/?replicaSet=rs0"):
+    def __init__(self,url="mongodb://127.0.0.1:27017,127.0.0.1:27018,127.0.0.1:27019/?replicaSet=rs0"):
+        print(f"{url}")
         self.__client=pymongo.MongoClient(url)
         self.__dblogs=self.__client["logger"]
         self.__dirs_acess=self.__client["dirs_acess"]
