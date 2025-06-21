@@ -3,10 +3,11 @@ from googleapiclient.http import MediaIoBaseDownload, MediaIoBaseUpload
 from googleapiclient.discovery import build
 from google.oauth2 import service_account 
 from utils.MongDBAPI import MongoDBAPI
+from utils.ReddisAPI import RedisAPI
 from datetime import datetime
 
 class DrivenetAPI:
-    def __init__(self,path:str,root_id:str, mongoapi:MongoDBAPI)->None:
+    def __init__(self,path:str,root_id:str, mongoapi:MongoDBAPI,redisapi:RedisAPI)->None:
         """
         Inicializa a API do Google Drive coma
         """
@@ -14,6 +15,7 @@ class DrivenetAPI:
         self.__drive_service = build('drive', 'v3', credentials=creds)
         self.__root_id=root_id
         self.__mongoapi=mongoapi
+        self.__redisapi=redisapi
         
     def ls_drivenet(self):
         """Listar arquivos em um diretório do Google Drive
