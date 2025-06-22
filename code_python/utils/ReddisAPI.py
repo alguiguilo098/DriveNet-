@@ -23,34 +23,28 @@ class RedisAPI:
             return None
         except Exception as e:
             print(f"Erro ao codificar o arquivo: {e}")
-    def __decode_base64_to_file(self,base64_string, output_file_path):
-        """Decodes a Base64 string back to a file."""
-        try:
-            decoded_data = base64.b64decode(base64_string)
-            with open(output_file_path, 'wb') as file:
-                file.write(decoded_data)
-            return f"File successfully decoded and saved to: {output_file_path}"
-        except Exception as e:
-            return f"An error occurred during decoding: {e}"
         
     def set_file(self,id,filepath):
         try:
-            if not self.redis.ping():
+            if not self.__redis.ping():
                 raise ConnectionError("Redis server is not reachable")
             if self.__len_size>self.__num_file_size:
                 base=self.__encode_file_to_base64(file_path=filepath)
                 self.__redis.set(id,base)
                 self.__num_file_size+=1
             else:
-                self.__redis.delete(id)
-                self.__num_file_size-=1
+                self.deltekey(id)
         except redis.ConnectionError as e:
             print(f"Connection error:{e}")
+
+    def new_method(self, id):
+        self.__redis.delete(id)
+        self.__num_file_size-=1
     def get_file(self,key:str):
         try:
-            if not self.redis.ping():
+            if not self.__redis.ping():
                 raise ConnectionError("Redis server is not reachable")
-            return self.__decode_base64_to_file(self.__redis.get(key),)
+            return self.__redis.get(key)
         except redis.ConnectionError as e:
             print(f"Connection error:{e}")
             return None
