@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-import code_python.src.utils.command_pb2 as command__pb2
+import command_pb2 as command__pb2
 
 GRPC_GENERATED_VERSION = '1.73.0'
 GRPC_VERSION = grpc.__version__
@@ -36,7 +36,7 @@ class TerminalServiceStub(object):
             channel: A grpc.Channel.
         """
         self.ExecutarComando = channel.unary_unary(
-                '/terminal.TerminalService/ExecutarComando',
+                '/TerminalService/ExecutarComando',
                 request_serializer=command__pb2.ComandoRequest.SerializeToString,
                 response_deserializer=command__pb2.ComandoResponse.FromString,
                 _registered_method=True)
@@ -63,9 +63,9 @@ def add_TerminalServiceServicer_to_server(servicer, server):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'terminal.TerminalService', rpc_method_handlers)
+            'TerminalService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('terminal.TerminalService', rpc_method_handlers)
+    server.add_registered_method_handlers('TerminalService', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
@@ -87,7 +87,7 @@ class TerminalService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/terminal.TerminalService/ExecutarComando',
+            '/TerminalService/ExecutarComando',
             command__pb2.ComandoRequest.SerializeToString,
             command__pb2.ComandoResponse.FromString,
             options,
