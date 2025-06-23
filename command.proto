@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-package terminal;
-
 // Serviço de terminal com envio e resposta de comandos
 service TerminalService {
   // Envia um comando com argumentos e recebe a saída
@@ -16,7 +14,7 @@ message ComandoRequest {
 
 // Mensagem com a resposta do comando
 message ComandoResponse {
-  string saida = 1;              // Saída padrão (stdout)
+  repeated string saida = 1;              // Saída padrão (stdout)
   string erro = 2;               // Saída de erro (stderr)
   int32 codigo_saida = 3;       // Código de saída do processo
 }
