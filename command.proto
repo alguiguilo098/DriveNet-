@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+package terminal;
+
 // Serviço de terminal com envio e resposta de comandos
 service TerminalService {
   // Envia um comando com argumentos e recebe a saída

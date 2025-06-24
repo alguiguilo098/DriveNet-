@@ -1,44 +1,101 @@
 #include "Drivenet.hpp"
-using namespace std;
-void Drivenet::welcome(){
-    system("figlet 'DRIVENET'");
-    cout <<endl;
+#include <iostream>
+
+Drivenet::Drivenet(const std::string& server_address) {
+    channel = grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials());
+    stub_ = terminal::TerminalService::NewStub(channel);
+    std::cout<< "conexão criada"<<std::endl;
 }
 
-void Drivenet::help()
-{
+Drivenet::~Drivenet() {}
+
+void Drivenet::welcome() {
+    std::cout << "Bem-vindo ao DriveNet!\n";
 }
 
-terminal::ComandoResponse Drivenet::lsnet(terminal::ComandoRequest request)
-{
-    return terminal::ComandoResponse();
+void Drivenet::help() {
+    std::cout << "Comandos disponíveis: lsnet, cdnet, mkdirnet, rmnet, chmodnet, lastlog\n";
 }
 
-terminal::ComandoRequest Drivenet::cdnet(terminal::ComandoRequest request)
-{
-    return terminal::ComandoRequest();
+terminal::ComandoResponse Drivenet::lsnet(terminal::ComandoRequest& request) {
+    grpc::ClientContext context;
+    terminal::ComandoResponse response;
+    grpc::Status status = stub_->ExecutarComando(&context, request, &response);
+
+    if (!status.ok()) {
+        response.set_erro("Erro ao executar lsnet: " + status.error_message());
+        response.set_codigo_saida(-1);
+    }
+
+    return response;
 }
 
-terminal::ComandoResponse Drivenet::mkdirnet(terminal::ComandoRequest request)
-{
-    return terminal::ComandoResponse();
+// Os métodos abaixo reutilizam o mesmo padrão de chamada:
+
+terminal::ComandoResponse Drivenet::cdnet(terminal::ComandoRequest& request) {
+    grpc::ClientContext context;
+    terminal::ComandoResponse response;
+    grpc::Status status = stub_->ExecutarComando(&context, request, &response);
+
+    if (!status.ok()) {
+        response.set_erro("Erro ao executar cdnet: " + status.error_message());
+        response.set_codigo_saida(-1);
+    }
+
+    return response;
 }
 
-terminal::ComandoRequest Drivenet::rmnet(terminal::ComandoRequest request)
-{
-    return terminal::ComandoRequest();
+terminal::ComandoResponse Drivenet::mkdirnet(terminal::ComandoRequest& request) {
+    grpc::ClientContext context;
+    terminal::ComandoResponse response;
+    grpc::Status status = stub_->ExecutarComando(&context, request, &response);
+
+    if (!status.ok()) {
+        response.set_erro("Erro ao executar mkdirnet: " + status.error_message());
+        response.set_codigo_saida(-1);
+    }
+
+    return response;
 }
 
-terminal::ComandoRequest Drivenet::chmodnet(terminal::ComandoRequest request)
-{
-    return terminal::ComandoRequest();
+terminal::ComandoResponse Drivenet::rmnet(terminal::ComandoRequest& request) {
+    grpc::ClientContext context;
+    terminal::ComandoResponse response;
+    grpc::Status status = stub_->ExecutarComando(&context, request, &response);
+
+    if (!status.ok()) {
+        response.set_erro("Erro ao executar rmnet: " + status.error_message());
+        response.set_codigo_saida(-1);
+    }
+
+    return response;
 }
 
-Drivenet::Drivenet()
-{
+terminal::ComandoResponse Drivenet::chmodnet(terminal::ComandoRequest& request) {
+    grpc::ClientContext context;
+    terminal::ComandoResponse response;
+    grpc::Status status = stub_->ExecutarComando(&context, request, &response);
 
+    if (!status.ok()) {
+        response.set_erro("Erro ao executar chmodnet: " + status.error_message());
+        response.set_codigo_saida(-1);
+    }
+
+    return response;
 }
 
-Drivenet::~Drivenet()
-{
+
+terminal::ComandoResponse Drivenet::lastlog(terminal::ComandoRequest& request) {
+    grpc::ClientContext context;
+    terminal::ComandoResponse response;
+
+    grpc::Status status = stub_->ExecutarComando(&context, request, &response);
+
+    std::cout << status.ok()<<std::endl;
+    std::cerr << "[DriveNet] gRPC falhou!" << std::endl;
+    std::cerr << " - Código: " << status.error_code() << std::endl;
+    std::cerr << " - Mensagem: " << status.error_message() << std::endl;
+    std::cerr << " - Detalhes: " << status.error_details() << std::endl;
+    return response;
 }
+
