@@ -372,18 +372,28 @@ class ComandoResponse final :
     kErroFieldNumber = 2,
     kCodigoSaidaFieldNumber = 3,
   };
-  // string saida = 1;
-  void clear_saida();
-  const std::string& saida() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_saida(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_saida();
-  PROTOBUF_NODISCARD std::string* release_saida();
-  void set_allocated_saida(std::string* saida);
+  // repeated string saida = 1;
+  int saida_size() const;
   private:
-  const std::string& _internal_saida() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_saida(const std::string& value);
-  std::string* _internal_mutable_saida();
+  int _internal_saida_size() const;
+  public:
+  void clear_saida();
+  const std::string& saida(int index) const;
+  std::string* mutable_saida(int index);
+  void set_saida(int index, const std::string& value);
+  void set_saida(int index, std::string&& value);
+  void set_saida(int index, const char* value);
+  void set_saida(int index, const char* value, size_t size);
+  std::string* add_saida();
+  void add_saida(const std::string& value);
+  void add_saida(std::string&& value);
+  void add_saida(const char* value);
+  void add_saida(const char* value, size_t size);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>& saida() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>* mutable_saida();
+  private:
+  const std::string& _internal_saida(int index) const;
+  std::string* _internal_add_saida();
   public:
 
   // string erro = 2;
@@ -416,7 +426,7 @@ class ComandoResponse final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr saida_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string> saida_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr erro_;
   int32_t codigo_saida_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
@@ -563,55 +573,79 @@ ComandoRequest::mutable_argumentos() {
 
 // ComandoResponse
 
-// string saida = 1;
+// repeated string saida = 1;
+inline int ComandoResponse::_internal_saida_size() const {
+  return saida_.size();
+}
+inline int ComandoResponse::saida_size() const {
+  return _internal_saida_size();
+}
 inline void ComandoResponse::clear_saida() {
-  saida_.ClearToEmpty();
+  saida_.Clear();
 }
-inline const std::string& ComandoResponse::saida() const {
-  // @@protoc_insertion_point(field_get:terminal.ComandoResponse.saida)
-  return _internal_saida();
-}
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void ComandoResponse::set_saida(ArgT0&& arg0, ArgT... args) {
- 
- saida_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:terminal.ComandoResponse.saida)
-}
-inline std::string* ComandoResponse::mutable_saida() {
-  std::string* _s = _internal_mutable_saida();
-  // @@protoc_insertion_point(field_mutable:terminal.ComandoResponse.saida)
+inline std::string* ComandoResponse::add_saida() {
+  std::string* _s = _internal_add_saida();
+  // @@protoc_insertion_point(field_add_mutable:terminal.ComandoResponse.saida)
   return _s;
 }
-inline const std::string& ComandoResponse::_internal_saida() const {
-  return saida_.Get();
+inline const std::string& ComandoResponse::_internal_saida(int index) const {
+  return saida_.Get(index);
 }
-inline void ComandoResponse::_internal_set_saida(const std::string& value) {
-  
-  saida_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+inline const std::string& ComandoResponse::saida(int index) const {
+  // @@protoc_insertion_point(field_get:terminal.ComandoResponse.saida)
+  return _internal_saida(index);
 }
-inline std::string* ComandoResponse::_internal_mutable_saida() {
-  
-  return saida_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+inline std::string* ComandoResponse::mutable_saida(int index) {
+  // @@protoc_insertion_point(field_mutable:terminal.ComandoResponse.saida)
+  return saida_.Mutable(index);
 }
-inline std::string* ComandoResponse::release_saida() {
-  // @@protoc_insertion_point(field_release:terminal.ComandoResponse.saida)
-  return saida_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+inline void ComandoResponse::set_saida(int index, const std::string& value) {
+  saida_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set:terminal.ComandoResponse.saida)
 }
-inline void ComandoResponse::set_allocated_saida(std::string* saida) {
-  if (saida != nullptr) {
-    
-  } else {
-    
-  }
-  saida_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), saida,
-      GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (saida_.IsDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited())) {
-    saida_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:terminal.ComandoResponse.saida)
+inline void ComandoResponse::set_saida(int index, std::string&& value) {
+  saida_.Mutable(index)->assign(std::move(value));
+  // @@protoc_insertion_point(field_set:terminal.ComandoResponse.saida)
+}
+inline void ComandoResponse::set_saida(int index, const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  saida_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:terminal.ComandoResponse.saida)
+}
+inline void ComandoResponse::set_saida(int index, const char* value, size_t size) {
+  saida_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:terminal.ComandoResponse.saida)
+}
+inline std::string* ComandoResponse::_internal_add_saida() {
+  return saida_.Add();
+}
+inline void ComandoResponse::add_saida(const std::string& value) {
+  saida_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:terminal.ComandoResponse.saida)
+}
+inline void ComandoResponse::add_saida(std::string&& value) {
+  saida_.Add(std::move(value));
+  // @@protoc_insertion_point(field_add:terminal.ComandoResponse.saida)
+}
+inline void ComandoResponse::add_saida(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  saida_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:terminal.ComandoResponse.saida)
+}
+inline void ComandoResponse::add_saida(const char* value, size_t size) {
+  saida_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:terminal.ComandoResponse.saida)
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>&
+ComandoResponse::saida() const {
+  // @@protoc_insertion_point(field_list:terminal.ComandoResponse.saida)
+  return saida_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>*
+ComandoResponse::mutable_saida() {
+  // @@protoc_insertion_point(field_mutable_list:terminal.ComandoResponse.saida)
+  return &saida_;
 }
 
 // string erro = 2;

@@ -1,9 +1,16 @@
 compile:
-	@protoc -I ../ --cpp_out=./src ../command.proto
-	@protoc -I ../ --grpc_out=./src --plugin=protoc-gen-grpc=`which grpc_cpp_plugin` ../command.proto
-	
+	@protoc -I . --cpp_out=./code_cpp/utils/grpc ./command.proto
+	@protoc -I . --grpc_out=./code_cpp/utils/grpc --plugin=protoc-gen-grpc=`which grpc_cpp_plugin` ./command.proto
+	@python3 -m grpc_tools.protoc -I . --python_out=./code_python --grpc_python_out=./code_python ./command.proto
+
+
 run:
-	@g++ -std=c++17 main.cpp command.pb.cc command.grpc.pb.cc \
-    `pkg-config --cflags --libs grpc++` -lprotobuf -lpthread -o client
+	@g++ -std=c++17 code_cpp/Main.cpp \
+	    code_cpp/utils/grpc/command.pb.cc \
+	    code_cpp/utils/grpc/command.grpc.pb.cc \
+	    code_cpp/utils/drivenet/Drivenet.cpp \
+	    `pkg-config --cflags --libs grpc++` -lprotobuf -lpthread -o client
+
 clean:
-	@rm -f *.o *.pb.cc *.pb.h $(TARGET)
+	@rm -f code_cpp/utils/grpc/*.pb.cc code_cpp/utils/grpc/*.pb.h client
+	@rm -f code_python/command_pb2.py code_python/command_pb2_grpc.py

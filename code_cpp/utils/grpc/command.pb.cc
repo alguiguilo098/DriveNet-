@@ -32,7 +32,7 @@ struct ComandoRequestDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ComandoRequestDefaultTypeInternal _ComandoRequest_default_instance_;
 constexpr ComandoResponse::ComandoResponse(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
-  : saida_(&::PROTOBUF_NAMESPACE_ID::internal::fixed_address_empty_string)
+  : saida_()
   , erro_(&::PROTOBUF_NAMESPACE_ID::internal::fixed_address_empty_string)
   , codigo_saida_(0){}
 struct ComandoResponseDefaultTypeInternal {
@@ -81,7 +81,7 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
 const char descriptor_table_protodef_command_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\rcommand.proto\022\010terminal\"5\n\016ComandoRequ"
   "est\022\017\n\007comando\030\001 \001(\t\022\022\n\nargumentos\030\002 \003(\t"
-  "\"D\n\017ComandoResponse\022\r\n\005saida\030\001 \001(\t\022\014\n\004er"
+  "\"D\n\017ComandoResponse\022\r\n\005saida\030\001 \003(\t\022\014\n\004er"
   "ro\030\002 \001(\t\022\024\n\014codigo_saida\030\003 \001(\0052Y\n\017Termin"
   "alService\022F\n\017ExecutarComando\022\030.terminal."
   "ComandoRequest\032\031.terminal.ComandoRespons"
@@ -351,7 +351,8 @@ class ComandoResponse::_Internal {
 
 ComandoResponse::ComandoResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned),
+  saida_(arena) {
   SharedCtor();
   if (!is_message_owned) {
     RegisterArenaDtor(arena);
@@ -359,16 +360,9 @@ ComandoResponse::ComandoResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena,
   // @@protoc_insertion_point(arena_constructor:terminal.ComandoResponse)
 }
 ComandoResponse::ComandoResponse(const ComandoResponse& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  : ::PROTOBUF_NAMESPACE_ID::Message(),
+      saida_(from.saida_) {
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  saida_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    saida_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_saida().empty()) {
-    saida_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_saida(), 
-      GetArenaForAllocation());
-  }
   erro_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     erro_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
@@ -382,10 +376,6 @@ ComandoResponse::ComandoResponse(const ComandoResponse& from)
 }
 
 inline void ComandoResponse::SharedCtor() {
-saida_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  saida_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
 erro_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
   erro_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
@@ -402,7 +392,6 @@ ComandoResponse::~ComandoResponse() {
 
 inline void ComandoResponse::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
-  saida_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   erro_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
@@ -422,7 +411,7 @@ void ComandoResponse::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  saida_.ClearToEmpty();
+  saida_.Clear();
   erro_.ClearToEmpty();
   codigo_saida_ = 0;
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
@@ -434,13 +423,18 @@ const char* ComandoResponse::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPAC
     uint32_t tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // string saida = 1;
+      // repeated string saida = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
-          auto str = _internal_mutable_saida();
-          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "terminal.ComandoResponse.saida"));
-          CHK_(ptr);
+          ptr -= 1;
+          do {
+            ptr += 1;
+            auto str = _internal_add_saida();
+            ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
+            CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "terminal.ComandoResponse.saida"));
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<10>(ptr));
         } else
           goto handle_unusual;
         continue;
@@ -491,14 +485,14 @@ uint8_t* ComandoResponse::_InternalSerialize(
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // string saida = 1;
-  if (!this->_internal_saida().empty()) {
+  // repeated string saida = 1;
+  for (int i = 0, n = this->_internal_saida_size(); i < n; i++) {
+    const auto& s = this->_internal_saida(i);
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_saida().data(), static_cast<int>(this->_internal_saida().length()),
+      s.data(), static_cast<int>(s.length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
       "terminal.ComandoResponse.saida");
-    target = stream->WriteStringMaybeAliased(
-        1, this->_internal_saida(), target);
+    target = stream->WriteString(1, s, target);
   }
 
   // string erro = 2;
@@ -533,11 +527,12 @@ size_t ComandoResponse::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // string saida = 1;
-  if (!this->_internal_saida().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_saida());
+  // repeated string saida = 1;
+  total_size += 1 *
+      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(saida_.size());
+  for (int i = 0, n = saida_.size(); i < n; i++) {
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+      saida_.Get(i));
   }
 
   // string erro = 2;
@@ -574,9 +569,7 @@ void ComandoResponse::MergeFrom(const ComandoResponse& from) {
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (!from._internal_saida().empty()) {
-    _internal_set_saida(from._internal_saida());
-  }
+  saida_.MergeFrom(from.saida_);
   if (!from._internal_erro().empty()) {
     _internal_set_erro(from._internal_erro());
   }
@@ -602,11 +595,7 @@ void ComandoResponse::InternalSwap(ComandoResponse* other) {
   auto* lhs_arena = GetArenaForAllocation();
   auto* rhs_arena = other->GetArenaForAllocation();
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      &saida_, lhs_arena,
-      &other->saida_, rhs_arena
-  );
+  saida_.InternalSwap(&other->saida_);
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
       &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       &erro_, lhs_arena,

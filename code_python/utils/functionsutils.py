@@ -1,7 +1,7 @@
 import base64
 import json
 
-def salvar_json_base64(base64_str, caminho_saida_json):
+def save_json_base64(base64_str, caminho_saida_json):
     """
     Decodifica uma string Base64 contendo um JSON e salva como arquivo .json.
 
@@ -27,7 +27,8 @@ def salvar_json_base64(base64_str, caminho_saida_json):
         with open(caminho_saida_json, "w", encoding="utf-8") as f:
             json.dump(json_obj, f, ensure_ascii=False, indent=4)
 
-        print(f"Arquivo JSON salvo em: {caminho_saida_json}")
+        return caminho_saida_json
+    
         
     except Exception as e:
         print(f"Erro ao salvar o JSON: {e}")
