@@ -12,6 +12,7 @@ service TerminalService {
 message ComandoRequest {
   string comando = 1;            // Ex: "ls"
   repeated string argumentos = 2; // Ex: ["-la", "/home/user"]
+  
 }
 
 // Mensagem com a resposta do comando
