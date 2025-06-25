@@ -24,25 +24,72 @@ class DriveNetServer(command_pb2_grpc.TerminalServiceServicer):
     def __init__(self):
         super().__init__()
         self.__drivenet_auth=DrivenetAPI(path="google_credencias.json",root_id="1S-PQtGE6q6J5jiPC9RLPJaIfj3hE57kn",mongoapi=mongoapi,redisapi=reddis)
-        print("Server")
     def ExecutarComando(self, request, context):
-        print("Server Executado")
         try:
-            if request.comando == "drivenet" and len(request.argumentos) >= 2:
-                pass               
+
+            if request.comando == "mkdir":
+                response=self.__drivenet_auth.mkdir_drivenet(request.argumentos[0])
+                responsecommand = command_pb2.ComandoResponse()
+                if response!=[]:
+                    responsecommand.saida.append(f"Diretório '{request.argumentos[0]}' criado com sucesso.")
+                    responsecommand.codigo_saida=1
+                else:
+                    responsecommand.saida.append(f"Erro ao criar diretório {request.argumentos[0]}")
+                    responsecommand.codigo_saida=-1
+                return responsecommand
+            elif request.comando =="cdnet":
+                response=self.__drivenet_auth.cd_drivenet(request.argumentos[0])
+                responsecommand = command_pb2.ComandoResponse()
+                if response:
+                    responsecommand.saida.append(f" Mudança para o Diretório '{request.argumentos[0]}'sucesso.")
+                    responsecommand.codigo_saida=4
+                else:
+                    responsecommand.saida.append(f"Erro ao mudar Diretório {request.argumentos[0]}")
+                    responsecommand.codigo_saida=-4
+                print("entrei ...")
+                return responsecommand
+            elif request.comando =="rmnet":
+                response=self.__drivenet_auth.rm_drivenet(request.argumentos[0])
+                responsecommand=command_pb2.ComandoResponse()
+                if response: 
+                    responsecommand.saida.append(f"Arquivo removido {responsecommand.argumentos[0]} com sucesso")
+                    responsecommand.codigo_saida=3
+                elif not response:
+                    responsecommand.saida.append(f"Erro ao remover Arquivo {responsecommand.argumentos[0]}")
+                    responsecommand.codigo_saida=-3
+                return responsecommand
+            elif request.comando =="upnet":
+                pass
+            elif request.comando =="downet":
+                pass
+            elif request.comando == "drivenet":
+                pass
+            elif request.comando == "lsnet":
+                response=self.__drivenet_auth.ls_drivenet()
+                responsecommand = command_pb2.ComandoResponse()
+                if response!=[]:
+                    for i in response:
+                        responsecommand.saida.append(f"{i['id']},{i['name']},{i.get("size","N/A")},{i['mimeType']},{i['modifiedTime']}")
+                    responsecommand.codigo_saida=2
+                    return responsecommand
+                else:
+                    responsecommand.saida.append("Erro ao listar diretório")
+                    responsecommand.codigo_saida=-2
+                    return responsecommand
+                
             elif request.comando == "lastlog":
-                print(request.comando)
                 requestlogs = mongoapi.getlogs(int(request.argumentos[0]))
-                print(requestlogs)
-                print("Teste ")
                 responsecommand = command_pb2.ComandoResponse()
                 for i in requestlogs:
-                    responsecommand.saida.append(f"{i['timestamp']} status: {i['status']} {i['mensagem']}")
+                    responsecommand.saida.append(f"{i['timestamp']} {i['mensagem']} status: {i['status']}")
+                lastlog=mongoapi.getlogs(1)[0]
+                print(f"{lastlog['timestamp']} status: {lastlog['status']} {lastlog['mensagem']}")
                 return responsecommand
+            
             else:            
                 # Resposta padrão (caso nada seja tratado acima)
                 response = command_pb2.ComandoResponse()
-                response.saida.append("Comando não reconhecido ou sem implementação.")
+                response.saida.append("Comando não reconhecido")
                 return response
 
         except Exception as e:

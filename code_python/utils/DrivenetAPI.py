@@ -15,20 +15,21 @@ class DrivenetAPI:
         self.__drive_service = build('drive', 'v3', credentials=creds)
         self.__root_id=root_id
         self.__mongoapi=mongoapi
-        self.__redisapi=redisapi
-        
+        self.__redisapi=redisapi 
     def ls_drivenet(self):
         """Listar arquivos em um diretório do Google Drive
         
         Args: 
-            file_id (str): ID do arquivo ou pasta no Google Drive"""
-        datetime_now= datetime.now()
+            file_id (str): ID do arquivo ou pasta no Google Drive
+        
+        """
+        datetime_now= datetime.now() # pega o tempo atual do servidor 
         try:
             results= self.__drive_service.files().list(
                 q=f"'{self.__root_id}' in parents and trashed=false",
                 fields="nextPageToken, files(id, name, mimeType, size, modifiedTime)"
-            )
-            response=results.execute().get("files",[])
+            ) # lista todas as pastas do diretório atual
+            response=results.execute().get("files",[]) # 
             self.__createlogs(datetime_now=datetime_now,mensagem=f"Listar")
             return response
         except Exception as e:
@@ -41,12 +42,12 @@ class DrivenetAPI:
 
     def __createlogs(self, datetime_now,mensagem,status="sucess"):
             self.__mongoapi.insert_log({
-                "timestamp": datetime_now.strftime("%d/%m/%Y, %H:%M:%S"),
+                "timestamp": datetime_now.strftime("%d/%m/%Y,%H:%M:%S"),
                 "mensagem": mensagem,
                 "status": status
             })
     
-    def mkdir_drivenet(self,name):
+    def mkdir_drivenet(self,name)->bool:
         """Criar um diretório no Google Drive
         
         Args:
@@ -72,7 +73,7 @@ class DrivenetAPI:
             return []
 
     
-    def rm_drivenet(self,file_id:str)->bool:
+    def rm_drivenet(self,file_name:str)->bool:
         """Remover um arquivo ou diretório do Google Drive
         
         Args:
@@ -80,26 +81,54 @@ class DrivenetAPI:
         
         datetime_now=datetime.now()
         try:
-            self.__drive_service.files().delete(fileId=file_id).execute()
+            results = self.__drive_service.files().list(
+            q=f"name='{file_name}' and trashed=false",
+            spaces='drive',
+            fields="files(id, name)").execute()
+            item = results.get('files', [])[0]
+            self.__drive_service.files().delete(fileId=item["id"]).execute()
             self.__createlogs(datetime_now=datetime_now,
-            mensagem=f"Arquivo {file_id} deletado com sucesso"
+            mensagem=f"Arquivo {file_name} deletado com sucesso"
             )
             return True
         except Exception as e:
             self.__createlogs(datetime_now=datetime_now,
-            mensagem=f"Error ao deletar Arquivo com id  {file_id}:{str(e)}",
+            mensagem=f"Error ao deletar Arquivo com  {file_name}:{str(e)}",
             status="error"
             )
             return False, str(e)
     
-    def cd_drivenet(self,file_id:str)->None:
-        """Mudar o diretório atual no Google Drive
-        
-        Args:
-            file_id(str): ID do arquivo ou pasta no Google Drive
-        
+    def cd_drivenet(self, file_name: str) -> bool:
         """
-        self.__root_id= file_id
+        Muda o diretório atual no Google Drive para a pasta com o nome especificado.
+
+        Args:
+            file_name (str): Nome do arquivo ou pasta no Google Drive.
+
+        Returns:
+            bool: True se a mudança foi bem-sucedida, False caso contrário.
+        """
+        try:
+            results = self.__drive_service.files().list(
+            q=f"name = '{file_name}' and trashed = false",
+            spaces='drive',
+            fields="files(id, name)",
+            pageSize=1
+        ).execute()
+
+            files = results.get('files', [])
+            if not files:
+                return False
+
+            self.__root_id = files[0]['id']
+            return True
+
+        except Exception as e:
+        # Se desejar logar o erro: print(f"Erro ao mudar diretório: {e}")
+            return False
+
+        
+
 
     def get_current_directory(self)->dict[str,str]:
         """Obter o ID do diretório atual no Google Drive
@@ -174,3 +203,8 @@ class DrivenetAPI:
             self.__createlogs(datetime_now=datetime_now,
             mensagem=f"Erro ao  realizar Dowload do arquivo {file_path}")
             return True
+
+if __name__=="__main__":
+    teste=DrivenetAPI(path="../google_credencias.json",root_id="1S-PQtGE6q6J5jiPC9RLPJaIfj3hE57kn",mongoapi=MongoDBAPI(),redisapi=RedisAPI())
+    teste.rm_drivenet("calvoteste")
+

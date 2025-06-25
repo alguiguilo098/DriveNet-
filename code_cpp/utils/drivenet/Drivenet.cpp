@@ -89,13 +89,7 @@ terminal::ComandoResponse Drivenet::lastlog(terminal::ComandoRequest& request) {
     grpc::ClientContext context;
     terminal::ComandoResponse response;
 
-    grpc::Status status = stub_->ExecutarComando(&context, request, &response);
-
-    std::cout << status.ok()<<std::endl;
-    std::cerr << "[DriveNet] gRPC falhou!" << std::endl;
-    std::cerr << " - Código: " << status.error_code() << std::endl;
-    std::cerr << " - Mensagem: " << status.error_message() << std::endl;
-    std::cerr << " - Detalhes: " << status.error_details() << std::endl;
+    grpc::Status status = stub_->ExecutarComando(&context, request, &response);    
     return response;
 }
 

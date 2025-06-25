@@ -8,10 +8,25 @@ int main() {
     client.help();
 
     terminal::ComandoRequest request;
-    request.set_comando("lastlog");
-    request.add_argumentos("3");
+    request.set_comando("cdnet");
+    request.add_argumentos("cal");
+    terminal::ComandoResponse response = client.cdnet(request);
+    
+    
+    for (size_t i = 0; i < response.saida_size(); i++){
+        std::cout<< response.saida(i)<<std::endl<<std::endl;
+    }
+    terminal::ComandoRequest request1;
+    request.set_comando("lsnet");
+    terminal::ComandoResponse response1 = client.lsnet(request);
 
-    terminal::ComandoResponse response = client.lastlog(request);
+    for (size_t i = 0; i < response1.saida_size(); i++){
+        std::cout<< response1.saida(i)<<std::endl<<std::endl;
+    }
+    
+    std::cout<<"print";
+
+    
 
     return 0;
 }
