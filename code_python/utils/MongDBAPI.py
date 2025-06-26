@@ -1,43 +1,56 @@
-import pymongo
+import pymongo  # Importa a biblioteca para interação com o MongoDB
 
 class MongoDBAPI:
-    def __init__(self,url="mongodb://127.0.0.1:27017,127.0.0.1:27018,127.0.0.1:27019/?replicaSet=rs0"):
+    def __init__(self, url="mongodb://127.0.0.1:27017,127.0.0.1:27018,127.0.0.1:27019/?replicaSet=rs0"):
+        # Inicializa a conexão com o MongoDB, conectando-se a um replicaset
         print(f"{url}")
-        self.__client=pymongo.MongoClient(url)
-        self.__dblogs=self.__client["logger"]
-        self.__dirs_acess=self.__client["dirs_acess"]
-    def insert_log(self,log:dict)->bool:
-        """Inserir um log no banco de dados MongoDB
-        
+        self.__client = pymongo.MongoClient(url)  # Cliente MongoDB
+        self.__dblogs = self.__client["logger"]  # Banco de dados para logs
+        self.__dirs_acess = self.__client["dirs_acess"]  # Banco de dados para diretórios acessados
+
+    def insert_log(self, log: dict) -> bool:
+        """
+        Inserir um log no banco de dados MongoDB
+
         Args:
-            log(dict): Dicionário contendo o log a ser inserido"""
+            log (dict): Dicionário contendo o log a ser inserido
+
+        Returns:
+            bool: True se inserido com sucesso, False caso contrário
+        """
         try:
             self.__dblogs["logs"].insert_one({
-                "timestamp":log.get("timestamp"),
-                "mensagem":log.get("mensagem"),
-                "status":log.get("status")
+                "timestamp": log.get("timestamp"),
+                "mensagem": log.get("mensagem"),
+                "status": log.get("status")
             })
             return True
         except Exception as e:
             print(f"Erro ao inserir log: {e}")
             return False
-    
-    def getlogs(self,limit:int=10)->list[dict]:
-        """Obter logs do banco de dados MongoDB
-        Args:
-            limit(int): Numero máximos de logs a serem retornados 
-            
-        """
 
-        logs=self.__dblogs["logs"].find().sort("timestamp",-1).limit(limit)
-        return list(logs)
-    
-    def insert_dir_acess(self,dir_acess:dict)->bool:
-        """Inserir um diretório acessado no banco de dados MongoDB
-        
+    def getlogs(self, limit: int = 10) -> list[dict]:
+        """
+        Obter logs do banco de dados MongoDB
+
         Args:
-            dir_acess(dict): Dicionário contendo o diretório a ser inserido
-        
+            limit (int): Número máximo de logs a serem retornados (default: 10)
+
+        Returns:
+            list[dict]: Lista de dicionários contendo os logs
+        """
+        logs = self.__dblogs["logs"].find().sort("timestamp", -1).limit(limit)
+        return list(logs)  # Converte o cursor para lista
+
+    def insert_dir_acess(self, dir_acess: dict) -> bool:
+        """
+        Inserir um diretório acessado no banco de dados MongoDB
+
+        Args:
+            dir_acess (dict): Dicionário contendo informações do diretório acessado
+
+        Returns:
+            bool: True se inserido com sucesso, False caso contrário
         """
         try:
             self.__dirs_acess["dirs_acess"].insert_one({
@@ -47,21 +60,28 @@ class MongoDBAPI:
             })
             return True
         except Exception as e:
-            print(f"Erro ao inserir diretório acessado:{e}")
+            print(f"Erro ao inserir diretório acessado: {e}")
             return False
-    
-    def get_dir_acess(self,limit:int=10)->list[dict]:
+
+    def get_dir_acess(self, limit: int = 10) -> list[dict]:
         """
         Obter diretórios acessados do banco de dados MongoDB
+
         Args:
-            limit(int): Numero máximos de diretórios acessados a serem retornados
+            limit (int): Número máximo de diretórios a serem retornados (default: 10)
+
+        Returns:
+            list[dict]: Lista de dicionários com os diretórios acessados
         """
         try:
-            dirs_acess=self.__dirs_acess["dirs_acess"].find().limit(limit)
+            dirs_acess = self.__dirs_acess["dirs_acess"].find().limit(limit)
             return list(dirs_acess)
         except Exception as e:
-            print("Erro ao obter diretórios acessados:",e)
+            print("Erro ao obter diretórios acessados:", e)
             return []
-    def close(self)->None:
-        """Fechar a conxão com o MongoDB"""
+
+    def close(self) -> None:
+        """
+        Fecha a conexão com o MongoDB
+        """
         self.__client.close()
