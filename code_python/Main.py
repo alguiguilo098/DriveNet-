@@ -59,9 +59,25 @@ class DriveNetServer(command_pb2_grpc.TerminalServiceServicer):
                     responsecommand.codigo_saida=-3
                 return responsecommand
             elif request.comando =="upnet":
-                pass
+                result=self.__drivenet_auth.file_upload(file_name=request.argumentos[0],base=request.argumentos[1])
+                responsecommand=command_pb2.ComandoResponse()
+                if result:
+                    responsecommand.saida.append(f"Upload do arquivo {responsecommand.argumentos[0]} com sucesso")
+                    responsecommand.codigo_saida=5
+                else:
+                    responsecommand.saida.append(f"Erro ao realizar Upload do arquivo {responsecommand.argumentos[0]}")
+                    responsecommand.codigo_saida=-5
+                return responsecommand
             elif request.comando =="downet":
-                pass
+                base64filearquivo=self.__drivenet_auth.file_download(request.argumentos[0])
+                responsecommand=command_pb2.ComandoResponse()
+                if base64filearquivo!=None:
+                    responsecommand.saida.append(base64filearquivo)
+                    responsecommand.codigo_saida=6
+                else:
+                    responsecommand.saida.append(f"Erro ao realizar Dowload do arquivo {request.argumentos[0]}")
+                    responsecommand.codigo_saida=-6
+                return responsecommand
             elif request.comando == "drivenet":
                 pass
             elif request.comando == "lsnet":
