@@ -11,7 +11,8 @@ private:
 public:
     void welcome();
     void help();
-
+    terminal::ComandoResponse downet(terminal::ComandoRequest& request);
+    terminal::ComandoResponse upnet(terminal::ComandoRequest& request);
     terminal::ComandoResponse lastlog(terminal::ComandoRequest& request);
     terminal::ComandoResponse lsnet(terminal::ComandoRequest& request);
     terminal::ComandoResponse cdnet(terminal::ComandoRequest& request);

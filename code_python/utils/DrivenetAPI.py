@@ -201,46 +201,66 @@ class DrivenetAPI:
             status="error") # gera o log de erro
             return False, str(e)
 
-    def file_download(self, file_path: str, file_id: str) -> str | None:
+    def file_download(self, file_name: str) -> str | None:
         datetime_now = datetime.now()
 
         try:
-        # Tenta obter do Redis o arquivo
+        # Busca o file_id no Drive
+            result = self.__drive_service.files().list(
+            q=f"name='{file_name}' and trashed=false and '{self.__root_id}' in parents",
+            spaces='drive',
+            fields="files(id)",
+            pageSize=1
+            ).execute()
+
+            files = result.get("files", [])
+            if not files:
+                self.__createlogs(
+                datetime_now=datetime_now,
+                mensagem=f"Arquivo {file_name} não encontrado no Google Drive.",
+                status="error"
+                )
+                return None
+
+            file_id = files[0]["id"]
+
+             # Tenta obter do Redis
             cached = self.__redisapi.get_file(file_id)
             if cached:
                 self.__createlogs(
                 datetime_now=datetime_now,
-                mensagem=f"Download do arquivo {file_path} realizado com sucesso (Redis)",
-                status="success") # cria o log  de mensagem 
-                return cached # retorna para usuário
+                mensagem=f"Download do arquivo {file_name} realizado com sucesso (Redis)",
+                status="success"
+            )
+                return cached
 
-            # Faz o download do Google Drive
+            # Faz download do Google Drive
             request = self.__drive_service.files().get_media(fileId=file_id)
             fh = io.BytesIO()
             downloader = MediaIoBaseDownload(fh, request)
 
             done = False
             while not done:
-                # realiza o dowload em chunck
                 _, done = downloader.next_chunk()
 
-            # Codifica em base64
             fh.seek(0)
             encoded_base64 = base64.b64encode(fh.read()).decode("utf-8")
 
+            # Armazena no Redis para cache futuro
+            self.__redisapi.set_file(file_id, encoded_base64)
+
             # Log de sucesso
             self.__createlogs(
-            datetime_now=datetime_now,
-            mensagem=f"Download do arquivo {file_path} realizado com sucesso (Drive)",
-            status="success"
+                datetime_now=datetime_now,
+                mensagem=f"Download do arquivo {file_name} realizado com sucesso (Drive)",
+                status="success"
             )
-            return encoded_base64 # retorna para usuário
+            return encoded_base64
 
         except Exception as e:
             self.__createlogs(
-                datetime_now=datetime_now,
-                mensagem=f"Erro ao realizar download do arquivo {file_path}: {e}",
-                status="error"
-            ) # log de erro
-        return None
-
+            datetime_now=datetime_now,
+            mensagem=f"Erro ao realizar download do arquivo {file_name}: {e}",
+            status="error"
+            )
+            return None

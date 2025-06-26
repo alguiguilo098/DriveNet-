@@ -1,32 +1,17 @@
 #include "utils/drivenet/Drivenet.hpp"
 #include <iostream>
+#include "utils/base64.hpp"
 
-int main() {
-    Drivenet client("127.0.0.1:50051");
-
-    client.welcome();
-    client.help();
-
-    terminal::ComandoRequest request;
-    request.set_comando("cdnet");
-    request.add_argumentos("cal");
-    terminal::ComandoResponse response = client.cdnet(request);
+int main(int argc, char const *argv[])
+{
+    auto file_byte=read_file("./teste.txt");
+    auto base64=base64_encode(file_byte);
+    auto file_a=base64_decode(base64);
+    write_file("teste2.txt",file_a);
+    std::cout<< base64<<std::endl;
     
-    
-    for (size_t i = 0; i < response.saida_size(); i++){
-        std::cout<< response.saida(i)<<std::endl<<std::endl;
-    }
-    terminal::ComandoRequest request1;
-    request.set_comando("lsnet");
-    terminal::ComandoResponse response1 = client.lsnet(request);
-
-    for (size_t i = 0; i < response1.saida_size(); i++){
-        std::cout<< response1.saida(i)<<std::endl<<std::endl;
-    }
-    
-    std::cout<<"print";
-
-    
-
     return 0;
 }
+
+
+
