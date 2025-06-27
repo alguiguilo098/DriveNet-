@@ -1,7 +1,7 @@
 #include <grpcpp/grpcpp.h>
 #include "../grpc/command.pb.h"
 #include "../grpc/command.grpc.pb.h"
-
+#include "../base64.hpp"
 class Drivenet
 {
 private:
@@ -11,7 +11,7 @@ private:
 public:
     void welcome();
     void help();
-    terminal::ComandoResponse downet(terminal::ComandoRequest& request);
+    terminal::ComandoResponse downet(terminal::ComandoRequest& request,const std::string& dirdowndload);
     terminal::ComandoResponse upnet(terminal::ComandoRequest& request);
     terminal::ComandoResponse lastlog(terminal::ComandoRequest& request);
     terminal::ComandoResponse lsnet(terminal::ComandoRequest& request);
