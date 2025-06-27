@@ -46,7 +46,6 @@ class DriveNetServer(command_pb2_grpc.TerminalServiceServicer):
                 else:
                     responsecommand.saida.append(f"Erro ao mudar Diretório {request.argumentos[0]}")
                     responsecommand.codigo_saida=-4
-                print("entrei ...")
                 return responsecommand
             elif request.comando =="rmnet":
                 response=self.__drivenet_auth.rm_drivenet(request.argumentos[0])
@@ -59,14 +58,20 @@ class DriveNetServer(command_pb2_grpc.TerminalServiceServicer):
                     responsecommand.codigo_saida=-3
                 return responsecommand
             elif request.comando =="upnet":
-                result=self.__drivenet_auth.file_upload(file_name=request.argumentos[0],base=request.argumentos[1])
-                responsecommand=command_pb2.ComandoResponse()
-                if result:
-                    responsecommand.saida.append(f"Upload do arquivo {responsecommand.argumentos[0]} com sucesso")
-                    responsecommand.codigo_saida=5
+                result = self.__drivenet_auth.file_upload(
+                file_name=request.argumentos[0],
+                base=request.argumentos[1]
+                )
+
+                responsecommand = command_pb2.ComandoResponse()
+
+                if result[0]:
+                    responsecommand.saida.append(f"Upload do arquivo {request.argumentos[0]} com sucesso")
+                    responsecommand.codigo_saida = 5
                 else:
-                    responsecommand.saida.append(f"Erro ao realizar Upload do arquivo {responsecommand.argumentos[0]}")
-                    responsecommand.codigo_saida=-5
+                    responsecommand.saida.append(f"Erro ao realizar Upload do arquivo {request.argumentos[0]}: {result[1]}")
+                    responsecommand.codigo_saida = -5
+                    print(result[1])
                 return responsecommand
             elif request.comando =="downet":
                 base64filearquivo=self.__drivenet_auth.file_download(request.argumentos[0])

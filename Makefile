@@ -9,6 +9,7 @@ run:
 	    code_cpp/utils/grpc/command.pb.cc \
 	    code_cpp/utils/grpc/command.grpc.pb.cc \
 	    code_cpp/utils/drivenet/Drivenet.cpp \
+		code_cpp/utils/base64.cpp\
 	    `pkg-config --cflags --libs grpc++` -lprotobuf -lpthread -o client
 
 clean:
