@@ -128,9 +128,21 @@ class DriveNetServer(command_pb2_grpc.TerminalServiceServicer):
                 lastlog=mongoapi.getlogs(1)[0]
                 print(f"{lastlog['timestamp']} status: {lastlog['status']} {lastlog['mensagem']}")
                 return responsecommand
-            elif request.comando=="exit":
-                self.__conections.pop(request.argumentos[0])
-                os.remove(f"./credencias_json/{random_name}.json")
+            elif request.comando == "exit":
+                responsecommand = command_pb2.ComandoResponse()
+                chave = request.argumentos[0]
+                if chave in self.__conections:
+                    self.__conections.pop(chave)
+
+                # Remove o arquivo de credenciais se existir
+                caminho_arquivo = f"./credencias_json/{request.argumentos[1]}.json"
+                if os.path.exists(caminho_arquivo):
+                    os.remove(caminho_arquivo)
+
+                responsecommand.saida.append(f"Conexão {chave} encerrada e credenciais removidas.")
+                responsecommand.codigo_saida = 0
+
+                return responsecommand
             else:
                 lastlog=mongoapi.getlogs(1)[0]
                 print(f"{lastlog['timestamp']} status: {lastlog['status']} {lastlog['mensagem']}")            

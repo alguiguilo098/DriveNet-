@@ -27,7 +27,8 @@
 
 namespace terminal {
 
-// Serviço de terminal com envio e resposta de comandos
+// Serviço gRPC responsável por receber comandos do cliente e retornar suas respostas.
+// Pode ser usado, por exemplo, para executar comandos remotamente.
 class TerminalService final {
  public:
   static constexpr char const* service_full_name() {
@@ -36,7 +37,7 @@ class TerminalService final {
   class StubInterface {
    public:
     virtual ~StubInterface() {}
-    // Envia um comando com argumentos e recebe a saída
+    // Executa um comando recebido com argumentos e retorna a saída padrão, erro e código de saída.
     virtual ::grpc::Status ExecutarComando(::grpc::ClientContext* context, const ::terminal::ComandoRequest& request, ::terminal::ComandoResponse* response) = 0;
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::terminal::ComandoResponse>> AsyncExecutarComando(::grpc::ClientContext* context, const ::terminal::ComandoRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::terminal::ComandoResponse>>(AsyncExecutarComandoRaw(context, request, cq));
@@ -47,7 +48,7 @@ class TerminalService final {
     class async_interface {
      public:
       virtual ~async_interface() {}
-      // Envia um comando com argumentos e recebe a saída
+      // Executa um comando recebido com argumentos e retorna a saída padrão, erro e código de saída.
       virtual void ExecutarComando(::grpc::ClientContext* context, const ::terminal::ComandoRequest* request, ::terminal::ComandoResponse* response, std::function<void(::grpc::Status)>) = 0;
       virtual void ExecutarComando(::grpc::ClientContext* context, const ::terminal::ComandoRequest* request, ::terminal::ComandoResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
     };
@@ -94,7 +95,7 @@ class TerminalService final {
    public:
     Service();
     virtual ~Service();
-    // Envia um comando com argumentos e recebe a saída
+    // Executa um comando recebido com argumentos e retorna a saída padrão, erro e código de saída.
     virtual ::grpc::Status ExecutarComando(::grpc::ServerContext* context, const ::terminal::ComandoRequest* request, ::terminal::ComandoResponse* response);
   };
   template <class BaseClass>
