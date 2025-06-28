@@ -1,23 +1,28 @@
 syntax = "proto3";
 
+// Arquivo .proto para definição do serviço gRPC TerminalService
+// Autor: Guilherme Almeida Lopes
+// Data de criação: 28/06/2025
+
 package terminal;
 
-// Serviço de terminal com envio e resposta de comandos
+// Serviço gRPC responsável por receber comandos do cliente e retornar suas respostas.
+// Pode ser usado, por exemplo, para executar comandos remotamente.
 service TerminalService {
-  // Envia um comando com argumentos e recebe a saída
+  // Executa um comando recebido com argumentos e retorna a saída padrão, erro e código de saída.
   rpc ExecutarComando (ComandoRequest) returns (ComandoResponse);
 }
 
-// Mensagem para enviar um comando com argumentos
+// Mensagem usada pelo cliente para solicitar a execução de um comando.
 message ComandoRequest {
-  string comando = 1;            // Ex: "ls"
-  repeated string argumentos = 2; // Ex: ["-la", "/home/user"]
-  
+  string comando = 1;                  // Comando a ser executado, por exemplo: "ls", "cat", etc.
+  repeated string argumentos = 2;      // Lista de argumentos para o comando, ex: ["-la", "/home/user"]
+  string hash_cliente = 3;            // Identificador (hash) da sessão/conexão do cliente
 }
 
-// Mensagem com a resposta do comando
+// Mensagem usada pelo servidor para retornar o resultado da execução do comando.
 message ComandoResponse {
-  repeated string saida = 1;              // Saída padrão (stdout)
-  string erro = 2;               // Saída de erro (stderr)
-  int32 codigo_saida = 3;       // Código de saída do processo
+  repeated string saida = 1;          // Saída padrão (stdout), pode conter várias linhas
+  string erro = 2;                    // Saída de erro (stderr), caso ocorra algum problema
+  int32 codigo_saida = 3;             // Código de saída do processo (0 para sucesso, outros para falha)
 }

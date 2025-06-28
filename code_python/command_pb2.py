@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rcommand.proto\x12\x08terminal\"5\n\x0e\x43omandoRequest\x12\x0f\n\x07\x63omando\x18\x01 \x01(\t\x12\x12\n\nargumentos\x18\x02 \x03(\t\"D\n\x0f\x43omandoResponse\x12\r\n\x05saida\x18\x01 \x03(\t\x12\x0c\n\x04\x65rro\x18\x02 \x01(\t\x12\x14\n\x0c\x63odigo_saida\x18\x03 \x01(\x05\x32Y\n\x0fTerminalService\x12\x46\n\x0f\x45xecutarComando\x12\x18.terminal.ComandoRequest\x1a\x19.terminal.ComandoResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rcommand.proto\x12\x08terminal\"5\n\x0e\x43omandoRequest\x12\x0f\n\x07\x63omando\x18\x01 \x01(\t\x12\x12\n\nargumentos\x18\x02 \x03(\t\"Z\n\x0f\x43omandoResponse\x12\r\n\x05saida\x18\x01 \x03(\t\x12\x0c\n\x04\x65rro\x18\x02 \x01(\t\x12\x14\n\x0c\x63odigo_saida\x18\x03 \x01(\x05\x12\x14\n\x0chash_cliente\x18\x04 \x01(\t2Y\n\x0fTerminalService\x12\x46\n\x0f\x45xecutarComando\x12\x18.terminal.ComandoRequest\x1a\x19.terminal.ComandoResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -34,7 +34,7 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_COMANDOREQUEST']._serialized_start=27
   _globals['_COMANDOREQUEST']._serialized_end=80
   _globals['_COMANDORESPONSE']._serialized_start=82
-  _globals['_COMANDORESPONSE']._serialized_end=150
-  _globals['_TERMINALSERVICE']._serialized_start=152
-  _globals['_TERMINALSERVICE']._serialized_end=241
+  _globals['_COMANDORESPONSE']._serialized_end=172
+  _globals['_TERMINALSERVICE']._serialized_start=174
+  _globals['_TERMINALSERVICE']._serialized_end=263
 # @@protoc_insertion_point(module_scope)

@@ -1,55 +1,82 @@
-import base64  # Usado para codificar o arquivo em base64
-import redis    # Biblioteca cliente para interação com o servidor Redis
+# RedisAPI.py
+# Autor: Guilherme Almeida Lopes
+# Data de criação: 28/06/2025
+# Descrição: Classe para gerenciar armazenamento temporário de arquivos codificados em base64 no Redis,
+# com controle de limite e remoção automática FIFO (First In, First Out).
+
+import base64  # Usado para codificação e decodificação base64 (caso necessário futuramente)
+import redis   # Biblioteca para interação com Redis
 
 class RedisAPI:
     def __init__(self, host="localhost", port=6379, db=0, password=None, len_size=5):
-        # Inicializa conexão com o Redis
+        """
+        Inicializa a conexão com o Redis e configura o limite de armazenamento.
+
+        Args:
+            host (str): Endereço do servidor Redis.
+            port (int): Porta do Redis.
+            db (int): Índice do banco de dados Redis.
+            password (str|None): Senha para autenticação, se necessário.
+            len_size (int): Quantidade máxima de arquivos permitidos.
+        """
         self.__redis = redis.Redis(
             host=host,
             port=port,
             db=db,
             password=password,
-            decode_responses=True  # Decodifica os dados retornados como string
+            decode_responses=True  # Garante que os dados retornem como string (e não bytes)
         )
-        self.__num_file_size = 0     # Contador de arquivos atualmente salvos no Redis
-        self.__len_size = len_size   # Número máximo de arquivos que podem ser salvos
         self.__len_size = len_size
-        self.__file_order_list = "file_order_list"  # Lista Redis para rastrear ordem dos arquivos
+        self.__file_order_list = "file_order_list"  # Lista que mantém ordem de inserção dos arquivos (FIFO)
 
-    def set_file(self, id, base):
+    def set_file(self, id, base) -> bool:
         """
-        Salva um arquivo (base64) no Redis. Remove o mais antigo se o limite for atingido.
+        Armazena um arquivo (em base64) no Redis, respeitando o limite configurado.
+
+        Args:
+            id (str): Chave única para o arquivo.
+            base (str): Conteúdo do arquivo em base64.
+
+        Returns:
+            bool: True se o arquivo foi salvo com sucesso, False em caso de erro.
         """
         try:
             if not self.__redis.ping():
                 raise ConnectionError("Redis server is not reachable")
 
-            # Verifica quantidade atual
+            # Verifica o número atual de arquivos armazenados
             current_count = self.__redis.llen(self.__file_order_list)
 
             if current_count >= self.__len_size:
-                # Remove o arquivo mais antigo
-                oldest_id = self.__redis.lpop(self.__file_order_list)  # Remove da lista
+                # Remove o arquivo mais antigo (FIFO)
+                oldest_id = self.__redis.lpop(self.__file_order_list)
                 if oldest_id:
-                    self.__redis.delete(oldest_id)  # Remove do Redis
+                    self.__redis.delete(oldest_id)
 
             if base:
-                self.__redis.set(id, base)  # Armazena o arquivo
-                self.__redis.rpush(self.__file_order_list, id)  # Adiciona o ID ao final da lista (ordem FIFO)
+                self.__redis.set(id, base)
+                self.__redis.rpush(self.__file_order_list, id)
                 return True
             return False
 
         except redis.ConnectionError as e:
-            print(f"Connection error: {e}")
+            print(f"Erro de conexão com Redis: {e}")
             return False
+
     def get_file(self, key: str):
         """
-        Recupera o conteúdo (base64) de um arquivo salvo no Redis pela chave
+        Recupera o conteúdo de um arquivo salvo no Redis.
+
+        Args:
+            key (str): Chave do arquivo a ser recuperado.
+
+        Returns:
+            str|None: Conteúdo do arquivo em base64 ou None em caso de falha.
         """
         try:
-            if not self.__redis.ping():  # Verifica a conexão com o Redis
+            if not self.__redis.ping():
                 raise ConnectionError("Redis server is not reachable")
-            return self.__redis.get(key)  # Retorna o conteúdo da chave
+            return self.__redis.get(key)
         except redis.ConnectionError as e:
-            print(f"Connection error: {e}")
+            print(f"Erro de conexão com Redis: {e}")
             return None
