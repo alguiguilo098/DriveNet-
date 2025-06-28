@@ -26,7 +26,8 @@ if _version_not_supported:
 
 
 class TerminalServiceStub(object):
-    """Serviço de terminal com envio e resposta de comandos
+    """Serviço gRPC responsável por receber comandos do cliente e retornar suas respostas.
+    Pode ser usado, por exemplo, para executar comandos remotamente.
     """
 
     def __init__(self, channel):
@@ -43,11 +44,12 @@ class TerminalServiceStub(object):
 
 
 class TerminalServiceServicer(object):
-    """Serviço de terminal com envio e resposta de comandos
+    """Serviço gRPC responsável por receber comandos do cliente e retornar suas respostas.
+    Pode ser usado, por exemplo, para executar comandos remotamente.
     """
 
     def ExecutarComando(self, request, context):
-        """Envia um comando com argumentos e recebe a saída
+        """Executa um comando recebido com argumentos e retorna a saída padrão, erro e código de saída.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -70,7 +72,8 @@ def add_TerminalServiceServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class TerminalService(object):
-    """Serviço de terminal com envio e resposta de comandos
+    """Serviço gRPC responsável por receber comandos do cliente e retornar suas respostas.
+    Pode ser usado, por exemplo, para executar comandos remotamente.
     """
 
     @staticmethod
