@@ -370,6 +370,7 @@ class ComandoResponse final :
   enum : int {
     kSaidaFieldNumber = 1,
     kErroFieldNumber = 2,
+    kHashClienteFieldNumber = 4,
     kCodigoSaidaFieldNumber = 3,
   };
   // repeated string saida = 1;
@@ -410,6 +411,20 @@ class ComandoResponse final :
   std::string* _internal_mutable_erro();
   public:
 
+  // string hash_cliente = 4;
+  void clear_hash_cliente();
+  const std::string& hash_cliente() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_hash_cliente(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_hash_cliente();
+  PROTOBUF_NODISCARD std::string* release_hash_cliente();
+  void set_allocated_hash_cliente(std::string* hash_cliente);
+  private:
+  const std::string& _internal_hash_cliente() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_hash_cliente(const std::string& value);
+  std::string* _internal_mutable_hash_cliente();
+  public:
+
   // int32 codigo_saida = 3;
   void clear_codigo_saida();
   int32_t codigo_saida() const;
@@ -428,6 +443,7 @@ class ComandoResponse final :
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string> saida_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr erro_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr hash_cliente_;
   int32_t codigo_saida_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_command_2eproto;
@@ -717,6 +733,57 @@ inline void ComandoResponse::_internal_set_codigo_saida(int32_t value) {
 inline void ComandoResponse::set_codigo_saida(int32_t value) {
   _internal_set_codigo_saida(value);
   // @@protoc_insertion_point(field_set:terminal.ComandoResponse.codigo_saida)
+}
+
+// string hash_cliente = 4;
+inline void ComandoResponse::clear_hash_cliente() {
+  hash_cliente_.ClearToEmpty();
+}
+inline const std::string& ComandoResponse::hash_cliente() const {
+  // @@protoc_insertion_point(field_get:terminal.ComandoResponse.hash_cliente)
+  return _internal_hash_cliente();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void ComandoResponse::set_hash_cliente(ArgT0&& arg0, ArgT... args) {
+ 
+ hash_cliente_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:terminal.ComandoResponse.hash_cliente)
+}
+inline std::string* ComandoResponse::mutable_hash_cliente() {
+  std::string* _s = _internal_mutable_hash_cliente();
+  // @@protoc_insertion_point(field_mutable:terminal.ComandoResponse.hash_cliente)
+  return _s;
+}
+inline const std::string& ComandoResponse::_internal_hash_cliente() const {
+  return hash_cliente_.Get();
+}
+inline void ComandoResponse::_internal_set_hash_cliente(const std::string& value) {
+  
+  hash_cliente_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+}
+inline std::string* ComandoResponse::_internal_mutable_hash_cliente() {
+  
+  return hash_cliente_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+}
+inline std::string* ComandoResponse::release_hash_cliente() {
+  // @@protoc_insertion_point(field_release:terminal.ComandoResponse.hash_cliente)
+  return hash_cliente_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+}
+inline void ComandoResponse::set_allocated_hash_cliente(std::string* hash_cliente) {
+  if (hash_cliente != nullptr) {
+    
+  } else {
+    
+  }
+  hash_cliente_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), hash_cliente,
+      GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (hash_cliente_.IsDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited())) {
+    hash_cliente_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:terminal.ComandoResponse.hash_cliente)
 }
 
 #ifdef __GNUC__

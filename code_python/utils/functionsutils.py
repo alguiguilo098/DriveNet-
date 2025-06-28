@@ -1,5 +1,6 @@
 import base64
 import json
+import hashlib 
 
 def save_json_base64(base64_str, caminho_saida_json):
     """
@@ -32,3 +33,28 @@ def save_json_base64(base64_str, caminho_saida_json):
         
     except Exception as e:
         print(f"Erro ao salvar o JSON: {e}")
+
+def calculate_sha256(file_path, chunk_size=8192):
+    """
+    Calculates the SHA256 hash of a given file.
+
+    Args:
+        file_path (str): The path to the file.
+        chunk_size (int): The size of chunks to read the file in bytes.
+                          Defaults to 8192 bytes.
+
+    Returns:
+        str: The hexadecimal representation of the SHA256 hash, or None if the file is not found.
+    """
+    sha256_hash = hashlib.sha256()
+    try:
+        with open(file_path, "rb") as f:
+            while True:
+                chunk = f.read(chunk_size)
+                if not chunk:
+                    break
+                sha256_hash.update(chunk)
+        return sha256_hash.hexdigest()
+    except FileNotFoundError:
+        print(f"Error: File not found at {file_path}")
+        return None

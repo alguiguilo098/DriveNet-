@@ -11,6 +11,7 @@ private:
 public:
     void welcome();
     void help();
+    terminal::ComandoRequest  drivenet(terminal::ComandoRequest&request);
     terminal::ComandoResponse downet(terminal::ComandoRequest& request,const std::string& dirdowndload);
     terminal::ComandoResponse upnet(terminal::ComandoRequest& request);
     terminal::ComandoResponse lastlog(terminal::ComandoRequest& request);

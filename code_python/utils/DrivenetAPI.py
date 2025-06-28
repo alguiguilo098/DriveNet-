@@ -127,8 +127,12 @@ class DrivenetAPI:
                 return False
 
             self.__root_id = files[0]['id']
-            return True
 
+            self.__createlogs(datetime_now=datetime_now,
+            mensagem=f"Arquivo {file_name} deletado com sucesso")
+
+            return True
+            
         except Exception as e:
         # Se desejar logar o erro: print(f"Erro ao mudar diretório: {e}")
             return False
@@ -205,7 +209,8 @@ class DrivenetAPI:
         datetime_now = datetime.now()
 
         try:
-        # Busca o file_id no Drive
+            # Busca o file_id no Drive
+            print("file id teste")
             result = self.__drive_service.files().list(
             q=f"name='{file_name}' and trashed=false and '{self.__root_id}' in parents",
             spaces='drive',
@@ -213,6 +218,7 @@ class DrivenetAPI:
             pageSize=1
             ).execute()
 
+            print("file id teste1")
             files = result.get("files", [])
             if not files:
                 self.__createlogs(
@@ -222,8 +228,10 @@ class DrivenetAPI:
                 )
                 return None
 
+            print("file id teste1")
             file_id = files[0]["id"]
 
+            print("file id teste1redis")
              # Tenta obter do Redis
             cached = self.__redisapi.get_file(file_id)
             if cached:
@@ -234,6 +242,7 @@ class DrivenetAPI:
             )
                 return cached
 
+            print("file id teste1redis")
             # Faz download do Google Drive
             request = self.__drive_service.files().get_media(fileId=file_id)
             fh = io.BytesIO()

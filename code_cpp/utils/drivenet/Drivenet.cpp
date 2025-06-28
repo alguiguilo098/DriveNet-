@@ -18,6 +18,10 @@ void Drivenet::help() {
     std::cout << "Comandos disponíveis: lsnet, cdnet, mkdirnet, rmnet, chmodnet, lastlog\n";
 }
 
+terminal::ComandoRequest Drivenet::drivenet(terminal::ComandoRequest &request){
+    return terminal::ComandoRequest();
+}
+
 terminal::ComandoResponse Drivenet::downet(terminal::ComandoRequest &request,const std::string& dirdowndload){
     grpc::ClientContext context;
     terminal::ComandoResponse response;
@@ -29,7 +33,7 @@ terminal::ComandoResponse Drivenet::downet(terminal::ComandoRequest &request,con
     }
     auto base=response.saida(0);
     auto bytes=base64_decode(base);
-    write_file(dirdowndload,bytes);
+    write_file("calvo.txt",bytes);
 
     return response;
 }

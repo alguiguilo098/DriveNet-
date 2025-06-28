@@ -34,6 +34,7 @@ constexpr ComandoResponse::ComandoResponse(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
   : saida_()
   , erro_(&::PROTOBUF_NAMESPACE_ID::internal::fixed_address_empty_string)
+  , hash_cliente_(&::PROTOBUF_NAMESPACE_ID::internal::fixed_address_empty_string)
   , codigo_saida_(0){}
 struct ComandoResponseDefaultTypeInternal {
   constexpr ComandoResponseDefaultTypeInternal()
@@ -67,6 +68,7 @@ const uint32_t TableStruct_command_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
   PROTOBUF_FIELD_OFFSET(::terminal::ComandoResponse, saida_),
   PROTOBUF_FIELD_OFFSET(::terminal::ComandoResponse, erro_),
   PROTOBUF_FIELD_OFFSET(::terminal::ComandoResponse, codigo_saida_),
+  PROTOBUF_FIELD_OFFSET(::terminal::ComandoResponse, hash_cliente_),
 };
 static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, -1, sizeof(::terminal::ComandoRequest)},
@@ -81,15 +83,15 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
 const char descriptor_table_protodef_command_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\rcommand.proto\022\010terminal\"5\n\016ComandoRequ"
   "est\022\017\n\007comando\030\001 \001(\t\022\022\n\nargumentos\030\002 \003(\t"
-  "\"D\n\017ComandoResponse\022\r\n\005saida\030\001 \003(\t\022\014\n\004er"
-  "ro\030\002 \001(\t\022\024\n\014codigo_saida\030\003 \001(\0052Y\n\017Termin"
-  "alService\022F\n\017ExecutarComando\022\030.terminal."
-  "ComandoRequest\032\031.terminal.ComandoRespons"
-  "eb\006proto3"
+  "\"Z\n\017ComandoResponse\022\r\n\005saida\030\001 \003(\t\022\014\n\004er"
+  "ro\030\002 \001(\t\022\024\n\014codigo_saida\030\003 \001(\005\022\024\n\014hash_c"
+  "liente\030\004 \001(\t2Y\n\017TerminalService\022F\n\017Execu"
+  "tarComando\022\030.terminal.ComandoRequest\032\031.t"
+  "erminal.ComandoResponseb\006proto3"
   ;
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_command_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_command_2eproto = {
-  false, false, 249, descriptor_table_protodef_command_2eproto, "command.proto", 
+  false, false, 271, descriptor_table_protodef_command_2eproto, "command.proto", 
   &descriptor_table_command_2eproto_once, nullptr, 0, 2,
   schemas, file_default_instances, TableStruct_command_2eproto::offsets,
   file_level_metadata_command_2eproto, file_level_enum_descriptors_command_2eproto, file_level_service_descriptors_command_2eproto,
@@ -371,6 +373,14 @@ ComandoResponse::ComandoResponse(const ComandoResponse& from)
     erro_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_erro(), 
       GetArenaForAllocation());
   }
+  hash_cliente_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    hash_cliente_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_hash_cliente().empty()) {
+    hash_cliente_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_hash_cliente(), 
+      GetArenaForAllocation());
+  }
   codigo_saida_ = from.codigo_saida_;
   // @@protoc_insertion_point(copy_constructor:terminal.ComandoResponse)
 }
@@ -379,6 +389,10 @@ inline void ComandoResponse::SharedCtor() {
 erro_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
   erro_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+hash_cliente_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  hash_cliente_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
 codigo_saida_ = 0;
 }
@@ -393,6 +407,7 @@ ComandoResponse::~ComandoResponse() {
 inline void ComandoResponse::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
   erro_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  hash_cliente_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
 void ComandoResponse::ArenaDtor(void* object) {
@@ -413,6 +428,7 @@ void ComandoResponse::Clear() {
 
   saida_.Clear();
   erro_.ClearToEmpty();
+  hash_cliente_.ClearToEmpty();
   codigo_saida_ = 0;
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
@@ -452,6 +468,16 @@ const char* ComandoResponse::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPAC
       case 3:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 24)) {
           codigo_saida_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // string hash_cliente = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
+          auto str = _internal_mutable_hash_cliente();
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "terminal.ComandoResponse.hash_cliente"));
           CHK_(ptr);
         } else
           goto handle_unusual;
@@ -511,6 +537,16 @@ uint8_t* ComandoResponse::_InternalSerialize(
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(3, this->_internal_codigo_saida(), target);
   }
 
+  // string hash_cliente = 4;
+  if (!this->_internal_hash_cliente().empty()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_hash_cliente().data(), static_cast<int>(this->_internal_hash_cliente().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "terminal.ComandoResponse.hash_cliente");
+    target = stream->WriteStringMaybeAliased(
+        4, this->_internal_hash_cliente(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -540,6 +576,13 @@ size_t ComandoResponse::ByteSizeLong() const {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
         this->_internal_erro());
+  }
+
+  // string hash_cliente = 4;
+  if (!this->_internal_hash_cliente().empty()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_hash_cliente());
   }
 
   // int32 codigo_saida = 3;
@@ -573,6 +616,9 @@ void ComandoResponse::MergeFrom(const ComandoResponse& from) {
   if (!from._internal_erro().empty()) {
     _internal_set_erro(from._internal_erro());
   }
+  if (!from._internal_hash_cliente().empty()) {
+    _internal_set_hash_cliente(from._internal_hash_cliente());
+  }
   if (from._internal_codigo_saida() != 0) {
     _internal_set_codigo_saida(from._internal_codigo_saida());
   }
@@ -600,6 +646,11 @@ void ComandoResponse::InternalSwap(ComandoResponse* other) {
       &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       &erro_, lhs_arena,
       &other->erro_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      &hash_cliente_, lhs_arena,
+      &other->hash_cliente_, rhs_arena
   );
   swap(codigo_saida_, other->codigo_saida_);
 }
