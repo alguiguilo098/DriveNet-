@@ -2,6 +2,9 @@
 #include <iostream>
 #include <string>
 #include <cstdio>
+#include <sstream>
+#include <vector>
+#include <algorithm>
 
 Drivenet::Drivenet(const std::string& server_address) {
     channel = grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials());
@@ -12,7 +15,7 @@ Drivenet::Drivenet(const std::string& server_address) {
 Drivenet::~Drivenet() {}
 
 void Drivenet::welcome() {
-    std::cout << "Bem-vindo ao DriveNet!\n";
+    system("figlets Drivenet");
 }
 
 
@@ -53,6 +56,84 @@ void Drivenet::help() {
     fprintf(fp, "    - Encerra a sessão com o servidor\n\n");
 
     pclose(fp);
+}
+
+void Drivenet::run() {
+    std::string linha, hash_cliente, nome_temp;
+
+    while (true) {
+        std::cout<<"drivenet"<< "> ";
+        std::getline(std::cin, linha);
+
+        if (linha.empty()) continue;
+
+        std::istringstream iss(linha);
+        std::vector<std::string> tokens;
+        std::string token;
+
+        while (iss >> token)
+            tokens.push_back(token);
+
+        if (tokens.empty()) continue;
+
+        std::string comando = tokens[0];
+        std::transform(comando.begin(), comando.end(), comando.begin(), ::tolower);
+
+        terminal::ComandoRequest req;
+        terminal::ComandoResponse res;
+        req.set_comando(comando);
+
+        for (size_t i = 1; i < tokens.size(); ++i)
+            req.add_argumentos(tokens[i]);
+
+        if (comando == "?") {
+            help();
+        } else if (comando == "drivenet") {
+            if (tokens.size() < 3) {
+                std::cout << "Uso: drivenet <root_id> <path_credenciais>\n";
+                continue;
+            }
+            res = drivenet(req, &hash_cliente, &nome_temp);
+        } else if (comando == "exit") {
+            req.set_hash_cliente(hash_cliente);
+            res = exit(req);
+            break;
+        } else if (comando == "lsnet") {
+            req.set_hash_cliente(hash_cliente);
+            res = lsnet(req);
+        } else if (comando == "cdnet") {
+            req.set_hash_cliente(hash_cliente);
+            res = cdnet(req);
+        } else if (comando == "mkdirnet") {
+            req.set_hash_cliente(hash_cliente);
+            res = mkdirnet(req);
+        } else if (comando == "rmnet") {
+            req.set_hash_cliente(hash_cliente);
+            res = rmnet(req);
+        } else if (comando == "lastlog") {
+            req.set_hash_cliente(hash_cliente);
+            res = lastlog(req);
+        } else if (comando == "upnet") {
+            req.set_hash_cliente(hash_cliente);
+            res = upnet(req);
+        } else if (comando == "downet") {
+            req.set_hash_cliente(hash_cliente);
+            res = downet(req, "./code_cpp/FileSystem");  // você pode ajustar o diretório
+        }else if (comando == "clear") {
+            #ifdef _WIN32
+                system("cls");
+            #else
+                system("clear");
+            #endif
+        }else {
+            std::cout << "Comando desconhecido.\n";
+            continue;
+        }
+
+        if (!res.erro().empty())
+            std::cerr << "Erro: " << res.erro() << std::endl;
+    }
+
 }
 
 
