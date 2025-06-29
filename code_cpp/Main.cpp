@@ -3,9 +3,8 @@
 #include <unistd.h>
 
 int main(int argc, const char** argv) {
-    Drivenet cliente("localhost:50051");
-    
-
+    Drivenet cliente(argv[1]);
+    cliente.run();
     return 0;
 }
 
