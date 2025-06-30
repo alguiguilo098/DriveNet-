@@ -3,7 +3,8 @@
 #include <unistd.h>
 
 int main(int argc, const char** argv) {
-    Drivenet cliente(argv[1]);
+    ManageResponseOutput out;
+    Drivenet cliente(argv[1],out);
     cliente.run();
     return 0;
 }
