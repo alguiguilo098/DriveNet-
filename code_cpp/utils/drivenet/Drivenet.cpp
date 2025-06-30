@@ -6,7 +6,8 @@
 #include <vector>
 #include <algorithm>
 
-Drivenet::Drivenet(const std::string& server_address) {
+Drivenet::Drivenet(const std::string& server_address,ManageResponseOutput output) {
+    output = output;
     channel = grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials());
     stub_ = terminal::TerminalService::NewStub(channel);
     std::cout<< "conexão criada"<<std::endl;
@@ -96,29 +97,38 @@ void Drivenet::run() {
             res = drivenet(req, &hash_cliente, &nome_temp);
         } else if (comando == "exit") {
             req.set_hash_cliente(hash_cliente);
-            res = exit(req);
+            res = exit(req,&nome_temp,&hash_cliente);
+            output.exiout(res);
             break;
         } else if (comando == "lsnet") {
             req.set_hash_cliente(hash_cliente);
             res = lsnet(req);
+            output.lsout(res);
+            
         } else if (comando == "cdnet") {
             req.set_hash_cliente(hash_cliente);
             res = cdnet(req);
+            output.cdout(res);
         } else if (comando == "mkdirnet") {
             req.set_hash_cliente(hash_cliente);
             res = mkdirnet(req);
+            output.mkdirout(res);
         } else if (comando == "rmnet") {
             req.set_hash_cliente(hash_cliente);
             res = rmnet(req);
+            output.rmout(res);
         } else if (comando == "lastlog") {
             req.set_hash_cliente(hash_cliente);
             res = lastlog(req);
+            output.lastlogout(res);
         } else if (comando == "upnet") {
             req.set_hash_cliente(hash_cliente);
             res = upnet(req);
+            output.upout(res);
         } else if (comando == "downet") {
             req.set_hash_cliente(hash_cliente);
-            res = downet(req, "./code_cpp/FileSystem");  // você pode ajustar o diretório
+            res = downet(req, "./code_cpp/FileSystem");
+            output.downout(res);
         }else if (comando == "clear") {
             #ifdef _WIN32
                 system("cls");
@@ -190,14 +200,22 @@ terminal::ComandoResponse Drivenet::drivenet(terminal::ComandoRequest &request, 
 }
 
 
-terminal::ComandoResponse Drivenet::exit(terminal::ComandoRequest& req) {
+terminal::ComandoResponse Drivenet::exit(terminal::ComandoRequest& req,std::string* uuid4,std::string* hash_ptr) {
     grpc::ClientContext context;
     terminal::ComandoResponse response;
-
+    if (uuid4) {
+        req.add_argumentos(*uuid4);
+    }
+    if (hash_ptr) {
+        req.add_argumentos(*hash_ptr);
+    }
+    
     grpc::Status status = stub_->ExecutarComando(&context, req, &response);
+    
+
 
     if (status.ok()) {
-        std::cout << "Sessão finalizada com sucesso no servidor.\n";
+        std::cout << response.saida(0);
     } else {
         std::cerr << "Erro ao finalizar sessão: " << status.error_message() << std::endl;
         response.add_saida("Erro de comunicação gRPC: " + status.error_message());
@@ -219,7 +237,7 @@ terminal::ComandoResponse Drivenet::downet(terminal::ComandoRequest &request,con
     }
     auto base=response.saida(0);
     auto bytes=base64_decode(base);
-    write_file("calvo.txt",bytes);
+    write_file(dirdowndload,bytes);
 
     return response;
 }

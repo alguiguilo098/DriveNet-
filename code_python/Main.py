@@ -129,13 +129,14 @@ class DriveNetServer(command_pb2_grpc.TerminalServiceServicer):
                 print(f"{lastlog['timestamp']} status: {lastlog['status']} {lastlog['mensagem']}")
                 return responsecommand
             elif request.comando == "exit":
+                print(request)
                 responsecommand = command_pb2.ComandoResponse()
-                chave = request.argumentos[0]
+                chave = request.hash_cliente
                 if chave in self.__conections:
                     self.__conections.pop(chave)
 
                 # Remove o arquivo de credenciais se existir
-                caminho_arquivo = f"./credencias_json/{request.argumentos[1]}.json"
+                caminho_arquivo = f"./credencias_json/{request.argumentos[0]}.json"
                 if os.path.exists(caminho_arquivo):
                     os.remove(caminho_arquivo)
 
