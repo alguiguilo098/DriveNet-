@@ -8,6 +8,7 @@ class Drivenet
     std::shared_ptr<grpc::Channel> channel;
     std::unique_ptr<terminal::TerminalService::Stub> stub_;
     ManageResponseOutput output;
+    bool isautenticaded=false;
     void welcome();
     void help();
     terminal::ComandoResponse drivenet(terminal::ComandoRequest &request, std::string* hash_ptr,std::string* name_ptr);

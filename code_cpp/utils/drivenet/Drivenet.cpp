@@ -32,28 +32,28 @@ void Drivenet::help() {
     fprintf(fp, "  drivenet <root_id> <path_credenciais>\n");
     fprintf(fp, "    - Inicia a sessão com as credenciais em base64\n\n");
 
-    fprintf(fp, "  lsnet <hash>\n");
+    fprintf(fp, "  lsnet \n");
     fprintf(fp, "    - Lista os arquivos do diretório atual\n\n");
 
-    fprintf(fp, "  cdnet <nome_diretorio> <hash>\n");
+    fprintf(fp, "  cdnet <nome_diretorio>\n");
     fprintf(fp, "    - Muda para o diretório especificado\n\n");
 
-    fprintf(fp, "  mkdirnet <nome_diretorio> <hash>\n");
+    fprintf(fp, "  mkdirnet <nome_diretorio>\n");
     fprintf(fp, "    - Cria um novo diretório\n\n");
 
-    fprintf(fp, "  rmnet <nome_arquivo_ou_diretorio> <hash>\n");
+    fprintf(fp, "  rmnet <nome_arquivo_ou_diretorio> \n");
     fprintf(fp, "    - Remove um arquivo ou diretório\n\n");
 
-    fprintf(fp, "  upnet <nome_arquivo> <arquivo_em_base64> <hash>\n");
+    fprintf(fp, "  upnet <nome_arquivo> <arquivo_em_base64> \n");
     fprintf(fp, "    - Faz upload de um arquivo codificado em base64\n\n");
 
-    fprintf(fp, "  downet <nome_arquivo> <hash>\n");
+    fprintf(fp, "  downet <nome_arquivo> \n");
     fprintf(fp, "    - Faz download de um arquivo (resposta em base64)\n\n");
 
-    fprintf(fp, "  lastlog <quantidade> <hash>\n");
+    fprintf(fp, "  lastlog <quantidade> \n");
     fprintf(fp, "    - Exibe os últimos logs de operações\n\n");
 
-    fprintf(fp, "  exit <hash>\n");
+    fprintf(fp, "  exit \n");
     fprintf(fp, "    - Encerra a sessão com o servidor\n\n");
 
     pclose(fp);
@@ -61,7 +61,6 @@ void Drivenet::help() {
 
 void Drivenet::run() {
     std::string linha, hash_cliente, nome_temp;
-
     while (true) {
         std::cout<<"drivenet"<< "> ";
         std::getline(std::cin, linha);
@@ -95,47 +94,44 @@ void Drivenet::run() {
                 continue;
             }
             res = drivenet(req, &hash_cliente, &nome_temp);
-        } else if (comando == "exit") {
+        }else if (comando == "exit") {
             req.set_hash_cliente(hash_cliente);
             res = exit(req,&nome_temp,&hash_cliente);
-            output.exiout(res);
             break;
-        } else if (comando == "lsnet") {
+        } else if (!isautenticaded){
+            std::cout << "Você precisa autenticarse primeiro com o comando 'drivenet <root_id> <path_credenciais>'\n";
+            continue;
+        }else if (comando == "lsnet" && this->isautenticaded) {
             req.set_hash_cliente(hash_cliente);
             res = lsnet(req);
-            output.lsout(res);
-            
-        } else if (comando == "cdnet") {
+            this->output.lsout(res);
+        } else if (comando == "cdnet" && this->isautenticaded) {
             req.set_hash_cliente(hash_cliente);
             res = cdnet(req);
-            output.cdout(res);
-        } else if (comando == "mkdirnet") {
+
+        } else if (comando == "mkdirnet" && this->isautenticaded) {
             req.set_hash_cliente(hash_cliente);
             res = mkdirnet(req);
-            output.mkdirout(res);
-        } else if (comando == "rmnet") {
+        } else if (comando == "rmnet" && this->isautenticaded) {
             req.set_hash_cliente(hash_cliente);
             res = rmnet(req);
-            output.rmout(res);
-        } else if (comando == "lastlog") {
+        } else if (comando == "lastlog" && this->isautenticaded) {
             req.set_hash_cliente(hash_cliente);
             res = lastlog(req);
-            output.lastlogout(res);
-        } else if (comando == "upnet") {
+            this->output.lastlogout(res);
+        } else if (comando == "upnet" && this->isautenticaded) {
             req.set_hash_cliente(hash_cliente);
             res = upnet(req);
-            output.upout(res);
-        } else if (comando == "downet") {
+        } else if (comando == "downet" && this->isautenticaded) {
             req.set_hash_cliente(hash_cliente);
-            res = downet(req, "./code_cpp/FileSystem");
-            output.downout(res);
+            res = downet(req,"/home/galmeidalopes/DriveNet-/FileSystem/"+req.argumentos(0));
         }else if (comando == "clear") {
             #ifdef _WIN32
                 system("cls");
             #else
                 system("clear");
             #endif
-        }else {
+        }else{
             std::cout << "Comando desconhecido.\n";
             continue;
         }
@@ -182,10 +178,10 @@ terminal::ComandoResponse Drivenet::drivenet(terminal::ComandoRequest &request, 
 
             // Seta o ponteiro se for válido
             if (hash_ptr) {
-                *hash_ptr = hash_cliente;
-                *name_ptr= nome_temp;
+                *hash_ptr = hash_cliente; // Atualiza o hash do cliente 
+                *name_ptr= nome_temp; // Atualiza o nome do arquivo temporário
+                this->isautenticaded= true; // Marca que a sessão foi autenticada
             }
-
             request.set_hash_cliente(hash_cliente); // opcional: atualiza request original
         } else {
             response.add_saida("Formato inválido da resposta.");
@@ -209,13 +205,11 @@ terminal::ComandoResponse Drivenet::exit(terminal::ComandoRequest& req,std::stri
     if (hash_ptr) {
         req.add_argumentos(*hash_ptr);
     }
-    
     grpc::Status status = stub_->ExecutarComando(&context, req, &response);
     
-
-
     if (status.ok()) {
-        std::cout << response.saida(0);
+        std::cout <<response.codigo_saida()<<response.saida(0)<<"\n";
+        this->isautenticaded=false; // Marca que a sessão foi finalizada
     } else {
         std::cerr << "Erro ao finalizar sessão: " << status.error_message() << std::endl;
         response.add_saida("Erro de comunicação gRPC: " + status.error_message());
@@ -237,7 +231,12 @@ terminal::ComandoResponse Drivenet::downet(terminal::ComandoRequest &request,con
     }
     auto base=response.saida(0);
     auto bytes=base64_decode(base);
-    write_file(dirdowndload,bytes);
+    if (bytes.size()>3){
+        write_file(dirdowndload,bytes);
+        std::cout << "Arquivo baixado com sucesso: "<< request.argumentos(0)<< "\n";
+    }else{
+        std::cout << "Erro ao baixar o arquivo:" << request.argumentos(0)<< "\n";
+    }
 
     return response;
 }
@@ -248,7 +247,6 @@ terminal::ComandoResponse Drivenet::upnet(terminal::ComandoRequest &request){
 
     std::string path_file=request.argumentos(1);
     auto bytes=read_file(path_file);
-    std::cout << "Bytes lidos: " << bytes.size() << "\n";
 
     std::string base64=base64_encode(bytes);
 
@@ -262,6 +260,8 @@ terminal::ComandoResponse Drivenet::upnet(terminal::ComandoRequest &request){
         response.set_erro("Erro ao executar downet: " + status.error_message());
         response.set_codigo_saida(-1);
         return response;
+    }else{
+        std::cout << "Arquivo enviado com sucesso: " << path_file << "\n";
     }
     return response;
 }
@@ -284,10 +284,14 @@ terminal::ComandoResponse Drivenet::cdnet(terminal::ComandoRequest& request) {
     terminal::ComandoResponse response;
     grpc::Status status = stub_->ExecutarComando(&context, request, &response);
 
+
     if (!status.ok()) {
         response.set_erro("Erro ao executar cdnet: " + status.error_message());
         response.set_codigo_saida(-1);
+    }else{
+        std::cout << "Diretório alterado com sucesso:" << response.saida(0)<< "\n";
     }
+    
 
     return response;
 }
@@ -300,6 +304,8 @@ terminal::ComandoResponse Drivenet::mkdirnet(terminal::ComandoRequest& request) 
     if (!status.ok()) {
         response.set_erro("Erro ao executar mkdirnet: " + status.error_message());
         response.set_codigo_saida(-1);
+    }else{
+        std::cout << response.saida(0)<< "\n";
     }
 
     return response;
@@ -313,7 +319,10 @@ terminal::ComandoResponse Drivenet::rmnet(terminal::ComandoRequest& request) {
     if (!status.ok()) {
         response.set_erro("Erro ao executar rmnet: " + status.error_message());
         response.set_codigo_saida(-1);
+    }else{
+        std::cout << response.saida(0)<< "\n";
     }
+    
 
     return response;
 }

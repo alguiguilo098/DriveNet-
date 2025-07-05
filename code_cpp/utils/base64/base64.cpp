@@ -98,5 +98,10 @@ std::vector<unsigned char> read_file(const std::string& filename) {
 // Escreve os bytes em um novo arquivo
 void write_file(const std::string& filename, const std::vector<unsigned char>& data) {
     std::ofstream file(filename, std::ios::binary);
+    if (!file) {
+        std::cerr << "Erro ao abrir o arquivo para escrita: " << filename << "\n";
+        return;
+    }
     file.write(reinterpret_cast<const char*>(data.data()), data.size());
+    file.flush();
 }

@@ -90,8 +90,14 @@ class DrivenetAPI:
             q=f"name='{file_name}' and trashed=false",
             spaces='drive',
             fields="files(id, name)").execute() # busca o id do arquivo
-            item = results.get('files', [])[0] # pega o primeiro arquivo obtido
-            self.__drive_service.files().delete(fileId=item["id"]).execute() # remove arquivo
+            item = results.get('files', []) # pega o primeiro arquivo obtido
+            if len(item) == 0:
+                self.__createlogs(datetime_now=datetime_now,
+                mensagem=f"Arquivo {file_name} não encontrado no Google Drive.",
+                status="error"
+                )
+                return False
+            self.__drive_service.files().delete(fileId=item[0]["id"]).execute() # remove arquivo
             self.__createlogs(datetime_now=datetime_now,
             mensagem=f"Arquivo {file_name} deletado com sucesso"
             ) # gera o log no monogo DB
@@ -114,6 +120,7 @@ class DrivenetAPI:
         Returns:
             bool: True se a mudança foi bem-sucedida, False caso contrário.
         """
+        datetime_now=datetime.now() # data atual do servidor
         try:
             results = self.__drive_service.files().list(
             q=f"name = '{file_name}' and trashed = false",
@@ -209,8 +216,6 @@ class DrivenetAPI:
         datetime_now = datetime.now()
 
         try:
-            # Busca o file_id no Drive
-            print("file id teste")
             result = self.__drive_service.files().list(
             q=f"name='{file_name}' and trashed=false and '{self.__root_id}' in parents",
             spaces='drive',
@@ -218,7 +223,6 @@ class DrivenetAPI:
             pageSize=1
             ).execute()
 
-            print("file id teste1")
             files = result.get("files", [])
             if not files:
                 self.__createlogs(
@@ -228,10 +232,8 @@ class DrivenetAPI:
                 )
                 return None
 
-            print("file id teste1")
             file_id = files[0]["id"]
 
-            print("file id teste1redis")
              # Tenta obter do Redis
             cached = self.__redisapi.get_file(file_id)
             if cached:
@@ -241,8 +243,7 @@ class DrivenetAPI:
                 status="success"
             )
                 return cached
-
-            print("file id teste1redis")
+            
             # Faz download do Google Drive
             request = self.__drive_service.files().get_media(fileId=file_id)
             fh = io.BytesIO()
