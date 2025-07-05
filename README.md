@@ -1,7 +1,9 @@
 # DriveNet-
  Aplicação de terminal que permite ao usuário interagir com o Google Drive diretamente pela linha de comando, realizando ações como upload, download, listagem de arquivos, criação de pastas, entre outras funcionalidades. 
 ## Arquitetura
-![image](https://github.com/user-attachments/assets/5aa41504-a526-4185-8f86-0f9a8c4a3451)
+
+![image](https://github.com/user-attachments/assets/93df7a6e-4a0d-4f36-b7e3-df453a72c317)
+
 * **Grpc**:Comunição entre o programa de terminal e o servidor python.
 * **redis**: Serviço de cache para manter os arquivos mais recentes
 * **pymongo**: Operações de logs de deletar e acesso ao arquivos.
