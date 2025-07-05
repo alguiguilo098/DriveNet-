@@ -28,7 +28,7 @@ class DriveNetServer(command_pb2_grpc.TerminalServiceServicer):
     def ExecutarComando(self, request, context):
         try:
             if request.comando == "drivenet":
-                random_name = str(uuid.uuid4())
+                random_name = str(uuid.uuid4()) # Gera u
                 path_file=save_json_base64(request.argumentos[1],f"credencias_json/{random_name}.json")
                 hash=calculate_sha256(path_file)
                 self.__conections[hash]=DrivenetAPI(path=path_file,root_id=request.argumentos[0],mongoapi=mongoapi,redisapi=reddis)
@@ -57,6 +57,7 @@ class DriveNetServer(command_pb2_grpc.TerminalServiceServicer):
                 else:
                     responsecommand.saida.append(f"Erro ao mudar Diretório {request.argumentos[0]}")
                     responsecommand.codigo_saida=-4
+
                 lastlog=mongoapi.getlogs(1)[0]
                 print(f"{lastlog['timestamp']} status: {lastlog['status']} {lastlog['mensagem']}")
                 return responsecommand
@@ -64,10 +65,10 @@ class DriveNetServer(command_pb2_grpc.TerminalServiceServicer):
                 response=self.__conections[request.hash_cliente].rm_drivenet(request.argumentos[0])
                 responsecommand=command_pb2.ComandoResponse()
                 if response: 
-                    responsecommand.saida.append(f"Arquivo removido {responsecommand.argumentos[0]} com sucesso")
+                    responsecommand.saida.append(f"Arquivo removido {request.argumentos[0]} com sucesso")
                     responsecommand.codigo_saida=3
                 elif not response:
-                    responsecommand.saida.append(f"Erro ao remover Arquivo {responsecommand.argumentos[0]}")
+                    responsecommand.saida.append(f"Arquivo {request.argumentos[0]} não encontrado")
                     responsecommand.codigo_saida=-3
                 lastlog=mongoapi.getlogs(1)[0]
                 print(f"{lastlog['timestamp']} status: {lastlog['status']} {lastlog['mensagem']}")
@@ -92,7 +93,6 @@ class DriveNetServer(command_pb2_grpc.TerminalServiceServicer):
             elif request.comando =="downet":
 
                 base64filearquivo=self.__conections[request.hash_cliente].file_download(request.argumentos[0])
-                print(base64filearquivo)
                 responsecommand=command_pb2.ComandoResponse()
                 if base64filearquivo!=None:
                     responsecommand.saida.append(base64filearquivo)
