@@ -8,6 +8,7 @@
 * **redis**: Serviço de cache para manter os arquivos mais recentes
 * **pymongo**: Operações de logs de deletar e acesso ao arquivos.
 * **pyDrive**: API de google drive para manipular arquivos.
+* **replicação**: Serviço de replicação usando o mongo-arbitrary 
 
 ## Interface de Serviço
 
