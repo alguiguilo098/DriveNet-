@@ -55,7 +55,7 @@ std::vector<unsigned char> base64_decode(const std::string& encoded) {
         return (isalnum(c) || (c == '+') || (c == '/'));
     };
 
-    while (in_len-- && (encoded[pos] != '=') && is_base64(encoded[pos])) {
+    while (in_len-- && is_base64(encoded[pos])) {
         char_array_4[i++] = encoded[pos]; pos++;
         if (i == 4) {
             for (i = 0; i < 4; ++i)

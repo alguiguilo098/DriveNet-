@@ -75,12 +75,10 @@ class DriveNetServer(command_pb2_grpc.TerminalServiceServicer):
                 return responsecommand
             elif request.comando =="upnet":
                 result = self.__conections[request.hash_cliente].file_upload(
-                file_name=request.argumentos[0],
-                base=request.argumentos[1]
+                file_name=request.argumentos[1],
+                base=request.argumentos[0]
                 )
-
                 responsecommand = command_pb2.ComandoResponse()
-
                 if result[0]:
                     responsecommand.saida.append(f"Upload do arquivo {request.argumentos[0]} com sucesso")
                     responsecommand.codigo_saida = 5

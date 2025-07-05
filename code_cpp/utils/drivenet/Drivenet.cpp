@@ -241,19 +241,28 @@ terminal::ComandoResponse Drivenet::downet(terminal::ComandoRequest &request,con
     return response;
 }
 
+std::string get_filename_from_path(const std::string& path) {
+    return path.substr(path.find_last_of("/\\") + 1);
+}
+
+
 terminal::ComandoResponse Drivenet::upnet(terminal::ComandoRequest &request){
     grpc::ClientContext context;
     terminal::ComandoResponse response;
 
-    std::string path_file=request.argumentos(1);
+    std::string path_file=request.argumentos(0);
+    std::string filename = get_filename_from_path(path_file);
+
     auto bytes=read_file(path_file);
-
     std::string base64=base64_encode(bytes);
+    std::cout << "Tamanho base64: " << base64.size() << "\n";
+    std::cout << "Últimos 10 caracteres: " << base64.substr(base64.size() - 10) << "\n";
 
-    path_file = request.argumentos(1);
-    std::cout << base64<<std::endl;
-    request.mutable_argumentos()->DeleteSubrange(1, 1);
+     // Limpar argumentos antigos
+     request.clear_argumentos();
+
     request.add_argumentos(base64);
+    request.add_argumentos(filename);
 
     grpc::Status status = stub_->ExecutarComando(&context, request, &response);
     if (!status.ok()) {

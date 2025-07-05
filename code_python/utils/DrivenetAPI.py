@@ -6,6 +6,18 @@ from google.oauth2 import service_account
 from utils.MongDBAPI import MongoDBAPI
 from utils.ReddisAPI import RedisAPI
 from datetime import datetime
+
+def safe_base64_decode(data: str) -> bytes:
+    # Remove quebras de linha e espaços
+    data = data.strip().replace("\n", "").replace("\r", "")
+
+    # Adiciona '=' se necessário para múltiplos de 4
+    missing_padding = len(data) % 4
+    if missing_padding:
+        data += '=' * (4 - missing_padding)
+
+    return base64.b64decode(data)
+
 """
   Descricao:DrivenetAPI fornece uma interface de alto nível para interagir com o Google Drive, 
   utilizando autenticação via credenciais de serviço e integração com MongoDB para logs e Redis para cache de arquivos.
@@ -182,7 +194,7 @@ class DrivenetAPI:
         # Decodifica base64 em bytes e cria stream para upload
         datetime_now=datetime.now()
         try:
-            file_bytes = base64.b64decode(base)
+            file_bytes = safe_base64_decode(base)
             file_stream = io.BytesIO(file_bytes)
 
             file_metadata={
