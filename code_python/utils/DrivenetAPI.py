@@ -122,39 +122,73 @@ class DrivenetAPI:
             )
             return False, str(e) # retorna para usuário o erro, e falha da operação
     
+
     def cd_drivenet(self, file_name: str) -> bool:
         """
-        Muda o diretório atual no Google Drive para a pasta com o nome especificado.
+        Muda o diretório atual no Google Drive para a pasta com o nome especificado,
+        ou volta um nível se for '..'.
 
         Args:
-            file_name (str): Nome do arquivo ou pasta no Google Drive.
+            file_name (str): Nome da pasta (ou '..' para voltar).
 
         Returns:
             bool: True se a mudança foi bem-sucedida, False caso contrário.
         """
-        datetime_now=datetime.now() # data atual do servidor
+        datetime_now = datetime.now()
         try:
+            # Voltar para o diretório pai
+            if file_name == "..":
+                if not self.__root_id:
+                    return False  # Diretório atual indefinido
+
+                metadata = self.__drive_service.files().get(
+                fileId=self.__root_id,
+                fields="parents"
+                ).execute()
+
+                parents = metadata.get("parents", [])
+                if not parents:
+                    return False  # Já está no root
+
+                self.__root_id = parents[0]
+                self.__createlogs(
+                datetime_now=datetime_now,
+                mensagem="Diretório alterado para o diretório pai (..)"
+                )
+                return True
+                return True
+
+            # Entrar na pasta filha com nome específico
             results = self.__drive_service.files().list(
-            q=f"name = '{file_name}' and trashed = false",
-            spaces='drive',
-            fields="files(id, name)",
-            pageSize=1
-        ).execute()
+                q=(
+                    f"name = '{file_name}' "
+                    f"and '{self.__root_id}' in parents "
+                    "and mimeType = 'application/vnd.google-apps.folder' "
+                    "and trashed = false"
+                ),
+                spaces='drive',
+                fields="files(id, name)",
+                pageSize=1
+            ).execute()
 
             files = results.get('files', [])
             if not files:
                 return False
 
             self.__root_id = files[0]['id']
-
-            self.__createlogs(datetime_now=datetime_now,
-            mensagem=f"Arquivo {file_name} deletado com sucesso")
-
+            self.__createlogs(
+                datetime_now=datetime_now,
+                mensagem=f"Diretório alterado para '{file_name}'"
+            )
             return True
-            
+
         except Exception as e:
-        # Se desejar logar o erro: print(f"Erro ao mudar diretório: {e}")
-            return False
+            self.__createlogs(
+            datetime_now=datetime_now,
+            mensagem=f"[ERRO] Falha ao mudar diretório: {str(e)}",
+            status="error"
+            )
+        return False
 
         
 
