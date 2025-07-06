@@ -339,7 +339,6 @@ terminal::ComandoResponse Drivenet::rmnet(terminal::ComandoRequest& request) {
 terminal::ComandoResponse Drivenet::lastlog(terminal::ComandoRequest& request) {
     grpc::ClientContext context;
     terminal::ComandoResponse response;
-
     grpc::Status status = stub_->ExecutarComando(&context, request, &response);
     if (!status.ok()) {
         response.set_erro("Erro ao executar chmodnet: " + status.error_message());

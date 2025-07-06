@@ -31,7 +31,7 @@ class DriveNetServer(command_pb2_grpc.TerminalServiceServicer):
                 random_name = str(uuid.uuid4()) # Gera u
                 path_file=save_json_base64(request.argumentos[1],f"credencias_json/{random_name}.json")
                 hash=calculate_sha256(path_file)
-                self.__conections[hash]=DrivenetAPI(path=path_file,root_id=request.argumentos[0],mongoapi=mongoapi,redisapi=reddis)
+                self.__conections[hash]=DrivenetAPI(path=path_file,root_id=request.argumentos[0],mongoapi=mongoapi,redisapi=reddis,hash=hash)
                 responsecommand = command_pb2.ComandoResponse()
                 responsecommand.saida.append(f"{hash},{random_name}")
                 return responsecommand
@@ -45,8 +45,7 @@ class DriveNetServer(command_pb2_grpc.TerminalServiceServicer):
                 else:
                     responsecommand.saida.append(f"Erro ao criar diretório {request.argumentos[0]}")
                     responsecommand.codigo_saida=-1
-                lastlog=mongoapi.getlogs(1)[0]
-                print(f"{lastlog['timestamp']} status: {lastlog['status']} {lastlog['mensagem']}")
+                self.lastlog(request.hash_cliente)
                 return responsecommand
             elif request.comando =="cdnet":
                 response=self.__conections[request.hash_cliente].cd_drivenet(request.argumentos[0])
@@ -57,9 +56,7 @@ class DriveNetServer(command_pb2_grpc.TerminalServiceServicer):
                 else:
                     responsecommand.saida.append(f"Erro ao mudar Diretório {request.argumentos[0]}")
                     responsecommand.codigo_saida=-4
-
-                lastlog=mongoapi.getlogs(1)[0]
-                print(f"{lastlog['timestamp']} status: {lastlog['status']} {lastlog['mensagem']}")
+                self.lastlog(request.hash_cliente)
                 return responsecommand
             elif request.comando =="rmnet":
                 response=self.__conections[request.hash_cliente].rm_drivenet(request.argumentos[0])
@@ -70,8 +67,7 @@ class DriveNetServer(command_pb2_grpc.TerminalServiceServicer):
                 elif not response:
                     responsecommand.saida.append(f"Arquivo {request.argumentos[0]} não encontrado")
                     responsecommand.codigo_saida=-3
-                lastlog=mongoapi.getlogs(1)[0]
-                print(f"{lastlog['timestamp']} status: {lastlog['status']} {lastlog['mensagem']}")
+                self.lastlog(request.hash_cliente)
                 return responsecommand
             elif request.comando =="upnet":
                 result = self.__conections[request.hash_cliente].file_upload(
@@ -85,8 +81,7 @@ class DriveNetServer(command_pb2_grpc.TerminalServiceServicer):
                 else:
                     responsecommand.saida.append(f"Erro ao realizar Upload do arquivo {request.argumentos[0]}: {result[1]}")
                     responsecommand.codigo_saida = -5
-                lastlog=mongoapi.getlogs(1)[0]
-                print(f"{lastlog['timestamp']} status: {lastlog['status']} {lastlog['mensagem']}")
+                self.lastlog(request.hash_cliente)
                 return responsecommand
             elif request.comando =="downet":
 
@@ -98,8 +93,7 @@ class DriveNetServer(command_pb2_grpc.TerminalServiceServicer):
                 else:
                     responsecommand.saida.append(f"Erro ao realizar Dowload do arquivo {request.argumentos[0]}")
                     responsecommand.codigo_saida=-6
-                lastlog=mongoapi.getlogs(1)[0]
-                print(f"{lastlog['timestamp']} status: {lastlog['status']} {lastlog['mensagem']}")
+                self.lastlog(request.hash_cliente)
                 return responsecommand
             elif request.comando == "lsnet":
                 response=self.__conections[request.hash_cliente].ls_drivenet()
@@ -108,23 +102,20 @@ class DriveNetServer(command_pb2_grpc.TerminalServiceServicer):
                     for i in response:
                         responsecommand.saida.append(f"{i['id']},{i['name']},{i.get("size","N/A")},{i['mimeType']},{i['modifiedTime']}")
                     responsecommand.codigo_saida=2
-                    lastlog=mongoapi.getlogs(1)[0]
-                    print(f"{lastlog['timestamp']} status: {lastlog['status']} {lastlog['mensagem']}")
+                    self.lastlog(request.hash_cliente)
                     return responsecommand
                 else:
                     responsecommand.saida.append("Erro ao listar diretório")
                     responsecommand.codigo_saida=-2
-                    lastlog=mongoapi.getlogs(1)[0]
-                    print(f"{lastlog['timestamp']} status: {lastlog['status']} {lastlog['mensagem']}")
+                    self.lastlog(request.hash_cliente)
                     return responsecommand
                 
             elif request.comando == "lastlog":
-                requestlogs = mongoapi.getlogs(int(request.argumentos[0]))
+                requestlogs = mongoapi.getlogs(int(request.argumentos[0]),request.hash_cliente)
                 responsecommand = command_pb2.ComandoResponse()
                 for i in requestlogs:
-                    responsecommand.saida.append(f"{i['timestamp']} {i['mensagem']} status: {i['status']}")
-                lastlog=mongoapi.getlogs(1)[0]
-                print(f"{lastlog['timestamp']} status: {lastlog['status']} {lastlog['mensagem']}")
+                    responsecommand.saida.append(f"hash:{i["hash"]} {i['timestamp']} {i['mensagem']} status: {i['status']}")
+                self.lastlog(request.hash_cliente)
                 return responsecommand
             elif request.comando == "exit":
                 print(request)
@@ -143,8 +134,7 @@ class DriveNetServer(command_pb2_grpc.TerminalServiceServicer):
 
                 return responsecommand
             else:
-                lastlog=mongoapi.getlogs(1)[0]
-                print(f"{lastlog['timestamp']} status: {lastlog['status']} {lastlog['mensagem']}")            
+                self.lastlog(request.hash_cliente)            
                 # Resposta padrão (caso nada seja tratado acima)
                 response = command_pb2.ComandoResponse()
                 response.saida.append("Comando não reconhecido")
@@ -154,6 +144,10 @@ class DriveNetServer(command_pb2_grpc.TerminalServiceServicer):
             response = command_pb2.ComandoResponse()
             response.saida.append(f"Erro ao executar comando: {str(e)}")
             return response
+
+    def lastlog(self,hash):
+        lastlog=mongoapi.getlogs(1,hash=hash)[0]
+        print(f"{lastlog['timestamp']} {lastlog['hash']} status: {lastlog['status']} {lastlog['mensagem']}")
 
 
 def server():
