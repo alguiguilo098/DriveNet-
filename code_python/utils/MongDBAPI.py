@@ -30,25 +30,37 @@ class MongoDBAPI:
             self.__dblogs["logs"].insert_one({
                 "timestamp": log.get("timestamp"),
                 "mensagem": log.get("mensagem"),
-                "status": log.get("status")
+                "status": log.get("status"),
+                "hash": log.get("hash", None)
             })
             return True
         except Exception as e:
             print(f"Erro ao inserir log: {e}")
             return False
 
-    def getlogs(self, limit: int = 10) -> list[dict]:
+    def getlogs(self, limit: int = 10, hash: str = None) -> list[dict]:
         """
-        Recupera os logs mais recentes do MongoDB.
+        Recupera os logs mais recentes do MongoDB, opcionalmente filtrando por hash.
 
         Args:
             limit (int): Quantidade máxima de logs a retornar. Padrão: 10.
+            hash (str): Hash opcional para filtrar os logs.
 
         Returns:
             list[dict]: Lista de logs ordenados por timestamp decrescente.
         """
-        logs = self.__dblogs["logs"].find().sort("timestamp", -1).limit(limit)
-        return list(logs)  # Converte o cursor em lista de dicionários
+        query = {}
+        if hash:
+            query["hash"] = hash
+
+        logs_cursor = (
+            self.__dblogs["logs"]
+            .find(query)
+            .sort("timestamp", -1)
+            .limit(limit)
+        )
+        
+        return list(logs_cursor)
 
     def close(self) -> None:
         """

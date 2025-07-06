@@ -23,7 +23,7 @@ def safe_base64_decode(data: str) -> bytes:
   utilizando autenticação via credenciais de serviço e integração com MongoDB para logs e Redis para cache de arquivos.
 """
 class DrivenetAPI:
-    def __init__(self,path:str,root_id:str, mongoapi:MongoDBAPI,redisapi:RedisAPI)->None:
+    def __init__(self,path:str,root_id:str, mongoapi:MongoDBAPI,redisapi:RedisAPI,hash:str)->None:
         """
         Inicializa a API do Google Drive coma
         """
@@ -31,7 +31,9 @@ class DrivenetAPI:
         self.__drive_service = build('drive', 'v3', credentials=creds)
         self.__root_id=root_id # id do diretório root
         self.__mongoapi=mongoapi # API MongoDB
-        self.__redisapi=redisapi # API Redis
+        self.__redisapi=redisapi # API Redis        
+        self.__cliente_hash= hash
+        
     def ls_drivenet(self):
         """Listar arquivos em um diretório do Google Drive
         
@@ -58,6 +60,7 @@ class DrivenetAPI:
 
     def __createlogs(self, datetime_now,mensagem,status="sucess"):
             self.__mongoapi.insert_log({
+                "hash": self.__cliente_hash,
                 "timestamp": datetime_now.strftime("%d/%m/%Y,%H:%M:%S"), # quando a operação no servidor foi realizado
                 "mensagem": mensagem, # descrição do evento
                 "status": status # status (sucess, error)
