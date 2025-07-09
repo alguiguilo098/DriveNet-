@@ -150,5 +150,69 @@ Instale as dependências necessárias para o servidor Python:
 pip install -r requirements.txt
 ```
 
-## Configuração credencias google Drive 
+Claro! Aqui está uma versão mais organizada, clara e visualmente agradável para o README da configuração das credenciais do Google Drive:
+
+---
+
+# Configuração das Credenciais para Google Drive API
+
+Este guia passo a passo mostra como criar e configurar as credenciais necessárias para acessar a API do Google Drive via script.
+
+---
+
+## Passo 1: Acesse o Google Cloud Console
+
+* Faça login com sua conta Google em [https://console.cloud.google.com](https://console.cloud.google.com).
+
+---
+
+## Passo 2: Crie um Projeto
+
+* No menu superior, clique em **Selecionar projeto** > **Novo Projeto**.
+* Dê um nome ao projeto.
+* Clique em **Criar**.
+
+---
+
+## Passo 3: Ative a API do Google Drive
+
+* No painel do projeto, acesse **APIs e serviços** > **Biblioteca**.
+* Busque por **Google Drive API**.
+* Clique na API e depois em **Ativar**.
+
+---
+
+## Passo 4: Crie as Credenciais
+
+* Vá para **APIs e serviços** > **Credenciais**.
+* Clique em **Criar credenciais** > **ID do cliente OAuth**.
+
+> Caso seja solicitado, configure a tela de consentimento:
+>
+> * Selecione o tipo **Externo**.
+> * Preencha os campos obrigatórios (nome do app, e-mail de suporte, etc).
+> * Salve a configuração.
+
+* Escolha o tipo de aplicativo: **Aplicativo de área de trabalho (Desktop app)**.
+* Dê um nome para as credenciais (ex: `Credenciais Drive`).
+* Clique em **Criar**.
+
+---
+
+## Passo 5: Baixe o arquivo `credentials.json`
+
+* Após criar, faça o download do arquivo `.json`.
+* Salve-o na pasta do seu projeto.
+* Se necessário, renomeie para `credentials.json`.
+
+---
+
+## Passo 6: Compartilhe arquivos/pastas com a Conta de Serviço
+
+* Abra o arquivo `credentials.json` e copie o e-mail da conta de serviço (geralmente termina com `@<projeto>.iam.gserviceaccount.com`).
+* No Google Drive, clique com o botão direito no arquivo ou pasta que deseja acessar via script.
+* Selecione **Compartilhar**.
+* Cole o e-mail copiado no campo de compartilhamento.
+* Defina a permissão como **Visualizador** ou **Editor** (conforme necessário).
+* Clique em **Enviar**.
 
