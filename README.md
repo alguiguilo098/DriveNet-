@@ -73,7 +73,8 @@ Essa interface permite executar comandos remotamente e obter seus resultados de 
 ### `downet`
 
 * **Função**: Faz download de arquivo em base64
-* **Argumento**: nome, hash cliente
+* **Argumento**: nome
+* **Hash cliente**: hash gerada na autenticação
 * **Retorno**: conteúdo em base64 ou mensagem de erro
 * **Código**: `6` (sucesso), `-6` (erro)
 
@@ -82,7 +83,7 @@ Essa interface permite executar comandos remotamente e obter seus resultados de 
 ### `lsnet`
 
 * **Função**: Lista arquivos no diretório atual
-* **Argumento**: hash cliente
+* **Hash cliente**: hash gerada na autenticação
 * **Retorno**: lista com ID, nome, tamanho, tipo e data
 * **Código**: `2` (sucesso), `-2` (erro)
 
@@ -91,7 +92,8 @@ Essa interface permite executar comandos remotamente e obter seus resultados de 
 ### `lastlog`
 
 * **Função**: Retorna os últimos logs
-* **Argumento**: quantidade de logs, hash cliente
+* **Argumento**: quantidade de logs
+* * **Hash cliente**: hash gerada na autenticação
 * **Retorno**: lista com timestamp, mensagem e status
 * **Código**: `7` (sucesso) e `-7` error
 
@@ -100,7 +102,8 @@ Essa interface permite executar comandos remotamente e obter seus resultados de 
 ### `exit`
 
 * **Função**: Encerra a sessão atual e remove as credenciais
-* **Argumento**: hash cliente
+* argumentos: nome aleatório
+* **Hash cliente**: hash gerada na autenticação
 * **Retorno**: sessão encerrada (sem mensagem obrigatória)
 * **Código**: `10` (sucesso, sugerido), `-10` (erro)
 
@@ -137,14 +140,12 @@ O projeto utiliza gRPC nas linguagens Python e C++. Para configurá-lo corretame
 
 ### 3. Gerar Arquivos grpc em C++ 
 ```bash
-cd code_cpp/
-make
+make compile
 ```
 
-### 4. Gerar Arquivos grpc em python 
+### 4. Gerar cliente  
 ```bash
-cd code_python/
-python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. command.proto
+make run
 ```
 
 ### 5. Instalação das Dependências do Python
@@ -153,11 +154,16 @@ Instale as dependências necessárias para o servidor Python:
 ```bash
 pip install -r requirements.txt
 ```
+### 6. Rodar servidor 
+```bash
+python3 Main.py
+```
 
-Claro! Aqui está uma versão mais organizada, clara e visualmente agradável para o README da configuração das credenciais do Google Drive:
 
----
-
+### 7. Rodar servidor 
+```bash
+./cliente locahost:50051
+```
 # Configuração das Credenciais para Google Drive API
 
 Este guia passo a passo mostra como criar e configurar as credenciais necessárias para acessar a API do Google Drive via script.
