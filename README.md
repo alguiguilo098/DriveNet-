@@ -93,7 +93,7 @@ Essa interface permite executar comandos remotamente e obter seus resultados de 
 * **Função**: Retorna os últimos logs
 * **Argumento**: quantidade de logs, hash cliente
 * **Retorno**: lista com timestamp, mensagem e status
-* **Código**: `7` (sucesso implícito)
+* **Código**: `7` (sucesso) e `-7` error
 
 ---
 
