@@ -33,7 +33,8 @@ Essa interface permite executar comandos remotamente e obter seus resultados de 
 ### `mkdirnet`
 
 * **Função**: Cria um diretório no Google Drive
-* **Argumento**: nome do diretório, hash cliente
+* **Argumento**: nome do diretório
+* **Hash cliente**: hash gerada na autenticação
 * **Retorno**: mensagem de sucesso ou erro
 * **Código**: `1` (sucesso), `-1` (erro)
 
@@ -42,7 +43,8 @@ Essa interface permite executar comandos remotamente e obter seus resultados de 
 ### `cdnet`
 
 * **Função**: Muda o diretório atual no Drive
-* **Argumento**: nome, hash cliente
+* **Argumento**: nome
+* **Hash cliente**: hash gerada na autenticação
 * **Retorno**: mensagem de status
 * **Código**: `4` (sucesso), `-4` (erro)
 
@@ -51,7 +53,8 @@ Essa interface permite executar comandos remotamente e obter seus resultados de 
 ### `rmnet`
 
 * **Função**: Remove arquivo ou pasta
-* **Argumento**: nome, hash cliente
+* **Argumento**: nome
+* **Hash cliente**: hash gerada na autenticação
 * **Retorno**: mensagem de status
 * **Código**: `3` (sucesso), `-3` (erro)
 
@@ -60,7 +63,8 @@ Essa interface permite executar comandos remotamente e obter seus resultados de 
 ### `upnet`
 
 * **Função**: Faz upload de um arquivo em base64
-* **Argumentos**: nome do arquivo, conteúdo em base64, hash cliente
+* **Argumentos**: nome do arquivo, conteúdo em base64
+* **Hash cliente**: hash gerada na autenticação
 * **Retorno**: mensagem de sucesso ou erro
 * **Código**: `5` (sucesso), `-5` (erro)
 
