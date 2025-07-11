@@ -243,6 +243,7 @@ class DrivenetAPI:
             request= self.__drive_service.files().create(
                 body=file_metadata,
                 media_body=media,
+                supportsAllDrives=True,
                 fields="id"
             )
 
@@ -262,41 +263,62 @@ class DrivenetAPI:
             return False, str(e)
 
     def file_download(self, file_name: str) -> str | None:
+        """Download de um arquivo do Google Drive
+        
+        Args:
+            file_name (str): Nome do arquivo a ser baixado
+            
+        Returns:
+            str | None: Conteúdo do arquivo em base64 ou None em caso de erro
+        """
         datetime_now = datetime.now()
 
         try:
             result = self.__drive_service.files().list(
-            q=f"name='{file_name}' and trashed=false and '{self.__root_id}' in parents",
-            spaces='drive',
-            fields="files(id)",
-            pageSize=1
+                q=f"name='{file_name}' and trashed=false and '{self.__root_id}' in parents",
+                spaces='drive',
+                fields="files(id, mimeType)",
+                pageSize=1
             ).execute()
 
             files = result.get("files", [])
             if not files:
                 self.__createlogs(
-                datetime_now=datetime_now,
-                mensagem=f"Arquivo {file_name} não encontrado no Google Drive.",
-                status="error"
+                    datetime_now=datetime_now,
+                    mensagem=f"Arquivo {file_name} não encontrado no Google Drive.",
+                    status="error"
                 )
                 return None
 
             file_id = files[0]["id"]
+            mime_type = files[0]["mimeType"]
 
-             # Tenta obter do Redis
+            # Tenta obter do Redis
             cached = self.__redisapi.get_file(file_id)
             if cached:
                 self.__createlogs(
-                datetime_now=datetime_now,
-                mensagem=f"Download do arquivo {file_name} realizado com sucesso (Redis)",
-                status="success"
-            )
+                    datetime_now=datetime_now,
+                    mensagem=f"Download do arquivo {file_name} realizado com sucesso (Redis)",
+                    status="success"
+                )
                 return cached
-            
-            # Faz download do Google Drive
-            request = self.__drive_service.files().get_media(fileId=file_id)
+
             fh = io.BytesIO()
-            downloader = MediaIoBaseDownload(fh, request)
+
+            # Arquivos do Google Docs precisam de exportação
+            if mime_type in [
+                "application/vnd.google-apps.document",    # Google Docs
+                "application/vnd.google-apps.spreadsheet", # Google Sheets
+                "application/vnd.google-apps.presentation" # Google Slides
+            ]:
+                # Define o tipo de exportação desejado (exemplo PDF)
+                mime_export = "application/pdf"
+                request = self.__drive_service.files().export_media(fileId=file_id, mimeType=mime_export)
+                downloader = MediaIoBaseDownload(fh, request)
+            else:
+                # Arquivos binários normais
+                request = self.__drive_service.files().get_media(fileId=file_id)
+                downloader = MediaIoBaseDownload(fh, request)
 
             done = False
             while not done:
@@ -308,7 +330,6 @@ class DrivenetAPI:
             # Armazena no Redis para cache futuro
             self.__redisapi.set_file(file_id, encoded_base64)
 
-            # Log de sucesso
             self.__createlogs(
                 datetime_now=datetime_now,
                 mensagem=f"Download do arquivo {file_name} realizado com sucesso (Drive)",
@@ -318,8 +339,9 @@ class DrivenetAPI:
 
         except Exception as e:
             self.__createlogs(
-            datetime_now=datetime_now,
-            mensagem=f"Erro ao realizar download do arquivo {file_name}: {e}",
-            status="error"
+                datetime_now=datetime_now,
+                mensagem=f"Erro ao realizar download do arquivo {file_name}: {e}",
+                status="error"
             )
             return None
+

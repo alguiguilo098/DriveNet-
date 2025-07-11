@@ -258,8 +258,8 @@ terminal::ComandoResponse Drivenet::upnet(terminal::ComandoRequest &request){
     std::cout << "Tamanho base64: " << base64.size() << "\n";
     std::cout << "Últimos 10 caracteres: " << base64.substr(base64.size() - 10) << "\n";
 
-     // Limpar argumentos antigos
-     request.clear_argumentos();
+    // Limpar argumentos antigos
+    request.clear_argumentos();
 
     request.add_argumentos(base64);
     request.add_argumentos(filename);
