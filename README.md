@@ -226,5 +226,5 @@ Este guia passo a passo mostra como criar e configurar as credenciais necessári
 * Defina a permissão como **Visualizador** ou **Editor** (conforme necessário).
 * Clique em **Enviar**.
 
-Link apresentação: https://drive.google.com/file/d/1nLEV8KS1rArDYDteym8KIkJleo2YGOn-/view?usp=drive_link
+Link apresentação: https://drive.google.com/file/d/1gpzWLC-om1FMuecggI3RxeZRhhbYlhsm/view?usp=sharing
 
